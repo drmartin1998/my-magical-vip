@@ -91,30 +91,77 @@ export const metadata: Metadata = {
 export default function TypicalDaysPage() {
   return (
     <div className="min-h-screen bg-white">
+      {/* Navigation Bar */}
+      <nav className="w-full py-4 px-4 sm:px-6 lg:px-8 shadow-lg text-white" style={{ backgroundImage: 'url(/global-nav-bg.png)' }}>
+        <div className="flex items-center justify-between">
+          <a href="/" className="font-bold text-lg text-black hover:text-gray-700 transition-colors">
+            My Magical VIP
+          </a>
+          <ul className="flex gap-6 text-sm font-bold">
+            <li>
+              <a href="/" className="text-black hover:text-gray-700 transition-colors">
+                🏠 Home
+              </a>
+            </li>
+            <li>
+              <a href="/typical-days" className="text-black hover:text-gray-700 transition-colors">
+                📅 Typical Days
+              </a>
+            </li>
+            <li>
+              <a href="#" className="text-black hover:text-gray-700 transition-colors">
+                ❓ FAQ
+              </a>
+            </li>
+            <li>
+              <a href="#" className="text-black hover:text-gray-700 transition-colors">
+                ℹ️ About
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
       {/* Hero Section */}
-      <section className="relative w-full bg-gradient-to-b from-indigo-600 via-purple-600 to-pink-500 py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto text-center">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-6">
+      <section className="relative w-full py-20 px-4 sm:px-6 lg:px-8 bg-cover bg-center" style={{ backgroundImage: 'url(https://cdn.shopify.com/s/files/1/0643/1971/7626/files/2thomas-kelley-5YtjgRNTli4-unsplash.jpg?crop=center&width=3000)' }}>
+        <div className="absolute inset-0 bg-gradient-to-r from-gray-900/40 via-gray-800/40 to-gray-900/40"></div>
+        <div className="relative max-w-6xl mx-auto text-center">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-6" style={{ textShadow: '2px 2px 2px #333333' }}>
             Typical Touring Days With Us
           </h1>
-          <p className="text-xl text-amber-100 max-w-3xl mx-auto">
+          <p className="text-xl text-amber-100 max-w-3xl mx-auto" style={{ textShadow: '2px 2px 2px #333333' }}>
             See what a day with My Magical VIP looks like at each park
           </p>
         </div>
       </section>
+
+      {/* Breadcrumb Navigation */}
+      <nav className="bg-gray-50 py-3 px-4 sm:px-6 lg:px-8 border-b border-gray-200">
+        <div className="max-w-6xl mx-auto">
+          <ol className="flex items-center space-x-2 text-sm">
+            <li>
+              <a href="/" className="text-blue-600 hover:text-blue-700">
+                Home
+              </a>
+            </li>
+            <li className="text-gray-500">/</li>
+            <li className="text-gray-700 font-medium">Typical Days</li>
+          </ol>
+        </div>
+      </nav>
 
       {/* Parks Section */}
       <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="max-w-6xl mx-auto">
           <div className="space-y-16">
             {parkDays.map((park, idx) => (
-              <div key={idx} className="bg-gradient-to-br from-indigo-50 to-pink-50 rounded-lg p-8 border-l-4 border-pink-500 shadow-md">
-                <h2 className="text-3xl font-bold text-indigo-900 mb-6">
+              <div key={idx} className="bg-gradient-to-br from-blue-50 to-emerald-50 rounded-lg p-8 border-l-4 border-emerald-500 shadow-md">
+                <h2 className="text-3xl font-bold text-blue-900 mb-6">
                   {park.name} Typical Day with My Magical VIP
                 </h2>
 
                 <div className="mb-8">
-                  <h3 className="text-lg font-semibold text-indigo-800 mb-4">
+                  <h3 className="text-lg font-semibold text-blue-900 mb-4">
                     Attractions & Experiences:
                   </h3>
                   <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -128,7 +175,7 @@ export default function TypicalDaysPage() {
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-semibold text-indigo-800 mb-3">
+                  <h3 className="text-lg font-semibold text-blue-900 mb-3">
                     About This Day:
                   </h3>
                   <p className="text-gray-700 leading-relaxed mb-4">
@@ -143,8 +190,8 @@ export default function TypicalDaysPage() {
                   </p>
                 </div>
 
-                <div className="mt-6 pt-6 border-t border-indigo-200">
-                  <button className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-3 px-8 rounded-lg transition-all shadow-md">
+                <div className="mt-6 pt-6 border-t border-blue-200">
+                  <button className="bg-gradient-to-r from-blue-500 to-emerald-500 hover:from-blue-600 hover:to-emerald-600 text-white font-bold py-3 px-8 rounded-lg transition-all shadow-md">
                     Book Now
                   </button>
                 </div>
@@ -153,7 +200,7 @@ export default function TypicalDaysPage() {
           </div>
 
           <div className="mt-16 bg-amber-50 border-2 border-amber-200 rounded-lg p-8">
-            <h2 className="text-2xl font-bold text-indigo-900 mb-4">
+            <h2 className="text-2xl font-bold text-blue-900 mb-4">
               Customize Your Day
             </h2>
             <p className="text-gray-700 mb-4">
@@ -192,23 +239,23 @@ export default function TypicalDaysPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-indigo-50 to-pink-50">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-blue-50 to-emerald-50">
         <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-3xl font-bold text-indigo-900 mb-6">
+          <h2 className="text-3xl font-bold text-blue-900 mb-6">
             Ready to Plan Your Magical Day?
           </h2>
           <p className="text-lg text-gray-700 mb-8">
             Contact us today to book your personalized Disney experience. Our
             guides are ready to help you make the most of your park visit!
           </p>
-          <button className="inline-block bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-4 px-12 rounded-lg transition-all shadow-md text-lg">
+          <button className="inline-block bg-gradient-to-r from-blue-500 to-emerald-500 hover:from-blue-600 hover:to-emerald-600 text-white font-bold py-4 px-12 rounded-lg transition-all shadow-md text-lg">
             Get Started Today
           </button>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-gradient-to-r from-indigo-900 via-purple-900 to-pink-900 text-white py-12 px-4 sm:px-6 lg:px-8">
+      <footer className="bg-gradient-to-r from-blue-900 via-emerald-900 to-blue-900 text-white py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
             <div>

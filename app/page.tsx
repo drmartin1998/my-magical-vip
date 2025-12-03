@@ -1,12 +1,19 @@
 import Image from "next/image";
 import type { ReactNode } from "react";
+import { getProducts } from "@/lib/shopify";
+import AddToCartButton from "@/components/AddToCartButton";
 
 interface PackageOption {
+  id: string;
   name: string;
   days: string;
   price: string;
   originalPrice?: string;
   description: string;
+  image?: {
+    url: string;
+    altText: string;
+  };
 }
 
 interface Step {
@@ -20,8 +27,10 @@ interface Testimonial {
   author: string;
 }
 
-const packages: PackageOption[] = [
+// Fallback packages in case Shopify fetch fails
+const fallbackPackages: PackageOption[] = [
   {
+    id: "1",
     name: "1 Day Magical VIP Package",
     days: "1 Day",
     price: "$250.00",
@@ -29,6 +38,7 @@ const packages: PackageOption[] = [
       "This plan includes 1 day with us making all Pre booked Multi Pass Lightning Lane reservations and same day multi pass lightning lanes on your park day.",
   },
   {
+    id: "2",
     name: "2 Days Magical VIP Package",
     days: "2 Days",
     price: "$400.00",
@@ -37,6 +47,7 @@ const packages: PackageOption[] = [
       "This plan includes 2 days with us making all Pre booked Multi Pass Lightning Lane reservations and same day multi pass lightning lanes on your park day.",
   },
   {
+    id: "3",
     name: "3 Days Magical VIP Package",
     days: "3 Days",
     price: "$550.00",
@@ -45,6 +56,7 @@ const packages: PackageOption[] = [
       "This plan includes 3 days with us making all Pre booked Multi Pass Lightning Lane reservations and same day multi pass lightning lanes on your park day.",
   },
   {
+    id: "4",
     name: "4 Days Magical VIP Package",
     days: "4 Days",
     price: "$650.00",
@@ -53,6 +65,7 @@ const packages: PackageOption[] = [
       "This plan includes 4 days with us making all Pre booked Multi Pass Lightning Lane reservations and same day multi pass lightning lanes on your park day.",
   },
   {
+    id: "5",
     name: "5 Days Magical VIP Package",
     days: "5 Days",
     price: "$750.00",
@@ -61,6 +74,7 @@ const packages: PackageOption[] = [
       "This plan includes 5 days with us making all Pre booked Multi Pass Lightning Lane reservations and same day multi pass lightning lanes on your park day.",
   },
   {
+    id: "6",
     name: "2025-2026 Annual Pass",
     days: "20 Days",
     price: "$2000.00",
@@ -129,32 +143,87 @@ const testimonials: Testimonial[] = [
   },
 ];
 
-export default function Home() {
+export default async function Home() {
+  let packages: PackageOption[] = fallbackPackages;
+
+  try {
+    const shopifyProducts = await getProducts(10);
+    packages = shopifyProducts.map((product, idx) => ({
+      id: product.id,
+      name: product.title,
+      days: product.title.includes("Day")
+        ? product.title.match(/\d+\s+Days?/)?.[0] || `${idx + 1} Day${idx > 0 ? "s" : ""}`
+        : "Package",
+      price: `$${parseFloat(product.priceRange.minVariantPrice.amount).toFixed(2)}`,
+      description: product.description || "",
+      image: product.featuredImage
+        ? {
+            url: product.featuredImage.url,
+            altText: product.featuredImage.altText || product.title,
+          }
+        : undefined,
+    }));
+  } catch (error) {
+    console.error("Failed to fetch Shopify products, using fallback packages:", error);
+  }
+
   return (
     <div className="min-h-screen bg-white">
+      {/* Navigation Bar */}
+      <nav className="w-full py-4 px-4 sm:px-6 lg:px-8 shadow-lg text-white" style={{ backgroundImage: 'url(/global-nav-bg.png)' }}>
+        <div className="flex items-center justify-between">
+          <a href="/" className="font-bold text-lg text-black hover:text-gray-700 transition-colors">
+            My Magical VIP
+          </a>
+          <ul className="flex gap-6 text-sm font-bold">
+            <li>
+              <a href="/" className="text-black hover:text-gray-700 transition-colors">
+                🏠 Home
+              </a>
+            </li>
+            <li>
+              <a href="/typical-days" className="text-black hover:text-gray-700 transition-colors">
+                📅 Typical Days
+              </a>
+            </li>
+            <li>
+              <a href="#" className="text-black hover:text-gray-700 transition-colors">
+                ❓ FAQ
+              </a>
+            </li>
+            <li>
+              <a href="#" className="text-black hover:text-gray-700 transition-colors">
+                ℹ️ About
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
       {/* Hero Section */}
-      <section className="relative w-full bg-gradient-to-b from-indigo-600 via-purple-600 to-pink-500 py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto text-center">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-6">
+      <section className="relative w-full py-20 px-4 sm:px-6 lg:px-8 bg-cover bg-center" style={{ backgroundImage: 'url(https://cdn.shopify.com/s/files/1/0643/1971/7626/files/2thomas-kelley-5YtjgRNTli4-unsplash.jpg?crop=center&width=3000)' }}>
+        <div className="absolute inset-0 bg-gradient-to-r from-gray-900/40 via-gray-800/40 to-gray-900/40"></div>
+        <div className="relative max-w-6xl mx-auto text-center">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-6" style={{ textShadow: '2px 2px 2px #333333' }}>
             My Magical VIP
           </h1>
-          <p className="text-xl sm:text-2xl text-amber-100 mb-8 max-w-3xl mx-auto font-semibold">
+          <p className="text-xl sm:text-2xl text-amber-100 mb-8 max-w-3xl mx-auto font-semibold" style={{ textShadow: '2px 2px 2px #333333' }}>
             Plan Your Next Magical Adventure
           </p>
-          <p className="text-base sm:text-lg text-white max-w-2xl mx-auto mb-10">
+          <p className="text-base sm:text-lg text-white max-w-2xl mx-auto mb-10" style={{ textShadow: '2px 2px 2px #333333' }}>
             Let us take the stress out of your Disney trip. We will manage your
             entire day, all you have to do is show up and relax!
           </p>
-          <a href="/typical-days" className="inline-block bg-amber-400 hover:bg-amber-300 text-indigo-900 font-bold py-3 px-8 rounded-full transition-colors shadow-lg">
+          <a href="/typical-days" className="inline-block text-white font-bold py-3 px-8 rounded-full shadow-lg green-button" style={{ textShadow: '2px 2px 2px #333333' }}>
             View Our Typical Days at Each Park
           </a>
         </div>
       </section>
 
       {/* Overview Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-indigo-50">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-blue-50">
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-3xl font-bold text-indigo-900 mb-6">
+          <h2 className="text-3xl font-bold text-blue-900 mb-6">
             Overview
           </h2>
           <p className="text-lg text-gray-700 leading-relaxed mb-4">
@@ -188,13 +257,24 @@ export default function Home() {
             {packages.map((pkg, idx) => (
               <div
                 key={idx}
-                className="bg-white border-2 border-indigo-100 rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden hover:border-indigo-300"
+                className="bg-white border-2 border-blue-200 rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden hover:border-blue-400"
               >
+                {pkg.image && (
+                  <div className="relative w-full h-48 bg-gray-200">
+                    <Image
+                      src={pkg.image.url}
+                      alt={pkg.image.altText}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    />
+                  </div>
+                )}
                 <div className="p-6">
-                  <h3 className="text-xl font-semibold text-indigo-900 mb-2">
+                  <h3 className="text-xl font-semibold text-blue-900 mb-2">
                     {pkg.name}
                   </h3>
-                  <p className="text-sm text-indigo-600 font-semibold mb-4">
+                  <p className="text-sm text-emerald-600 font-semibold mb-4">
                     {pkg.days}
                   </p>
                   <p className="text-gray-700 mb-6 leading-relaxed">
@@ -202,7 +282,7 @@ export default function Home() {
                   </p>
 
                   <div className="mb-6">
-                    <span className="text-3xl font-bold text-pink-600">
+                    <span className="text-3xl font-bold text-emerald-600">
                       {pkg.price}
                     </span>
                     {pkg.originalPrice && (
@@ -212,9 +292,7 @@ export default function Home() {
                     )}
                   </div>
 
-                  <button className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-3 rounded-lg transition-all shadow-md">
-                    Get Started
-                  </button>
+                  <AddToCartButton productId={pkg.id} productName={pkg.name} />
                 </div>
               </div>
             ))}
@@ -223,9 +301,9 @@ export default function Home() {
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-indigo-50 to-pink-50">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-blue-50 to-emerald-50">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-indigo-900 mb-12 text-center">
+          <h2 className="text-3xl font-bold text-blue-900 mb-12 text-center">
             What Our Customers Say
           </h2>
 
@@ -233,12 +311,12 @@ export default function Home() {
             {testimonials.map((testimonial, idx) => (
               <div
                 key={idx}
-                className="bg-white border-l-4 border-pink-500 rounded-lg p-6 shadow-md"
+                className="bg-white border-l-4 border-emerald-500 rounded-lg p-6 shadow-md"
               >
                 <p className="text-gray-700 mb-4 italic">
                   "{testimonial.quote}"
                 </p>
-                <p className="font-bold text-indigo-900">
+                <p className="font-bold text-blue-900">
                   -{testimonial.author}
                 </p>
               </div>
@@ -250,7 +328,7 @@ export default function Home() {
               href="https://www.facebook.com/profile.php?id=100085119818852&sk=reviews"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-pink-600 hover:text-pink-700 font-bold"
+              className="text-emerald-600 hover:text-emerald-700 font-bold"
             >
               View all reviews on Facebook
             </a>
@@ -261,7 +339,7 @@ export default function Home() {
       {/* 7 Steps Section */}
       <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-indigo-900 mb-12 text-center">
+          <h2 className="text-3xl font-bold text-blue-900 mb-12 text-center">
             7 Steps to a Magical Day
           </h2>
           <p className="text-center text-gray-600 mb-12 max-w-3xl mx-auto">
@@ -271,11 +349,11 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {steps.map((step) => (
-              <div key={step.number} className="bg-gradient-to-br from-indigo-50 to-pink-50 p-6 rounded-lg shadow-md border-l-4 border-pink-500">
-                <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-lg mb-4">
+              <div key={step.number} className="bg-gradient-to-br from-blue-50 to-emerald-50 p-6 rounded-lg shadow-md border-l-4 border-emerald-500">
+                <div className="bg-gradient-to-r from-blue-500 to-emerald-500 text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-lg mb-4">
                   {step.number}
                 </div>
-                <h3 className="font-bold text-indigo-900 mb-2">
+                <h3 className="font-bold text-blue-900 mb-2">
                   {step.title}
                 </h3>
                 <p className="text-gray-700 text-sm">
@@ -288,29 +366,29 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gradient-to-r from-indigo-900 via-purple-900 to-pink-900 text-white py-12 px-4 sm:px-6 lg:px-8">
+      <footer className="bg-gradient-to-r from-blue-900 via-emerald-900 to-blue-900 text-white py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
             <div>
-              <h3 className="font-bold text-lg mb-4 text-amber-300">My Magical VIP</h3>
+              <h3 className="font-bold text-lg mb-4 text-emerald-300">My Magical VIP</h3>
               <ul className="space-y-2 text-sm text-gray-300">
                 <li>
-                  <a href="/" className="hover:text-amber-300 transition-colors">
+                  <a href="/" className="hover:text-emerald-300 transition-colors">
                     Home
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-amber-300 transition-colors">
+                  <a href="#" className="hover:text-emerald-300 transition-colors">
                     Typical Days
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-amber-300 transition-colors">
+                  <a href="#" className="hover:text-emerald-300 transition-colors">
                     FAQ
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-amber-300 transition-colors">
+                  <a href="#" className="hover:text-emerald-300 transition-colors">
                     About
                   </a>
                 </li>
@@ -318,15 +396,15 @@ export default function Home() {
             </div>
 
             <div>
-              <h3 className="font-bold text-lg mb-4 text-amber-300">Legal</h3>
+              <h3 className="font-bold text-lg mb-4 text-emerald-300">Legal</h3>
               <ul className="space-y-2 text-sm text-gray-300">
                 <li>
-                  <a href="#" className="hover:text-amber-300 transition-colors">
+                  <a href="#" className="hover:text-emerald-300 transition-colors">
                     Cancellation Policy
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-amber-300 transition-colors">
+                  <a href="#" className="hover:text-emerald-300 transition-colors">
                     Privacy Policy
                   </a>
                 </li>
@@ -334,29 +412,29 @@ export default function Home() {
             </div>
 
             <div>
-              <h3 className="font-bold text-lg mb-4 text-amber-300">Contact</h3>
+              <h3 className="font-bold text-lg mb-4 text-emerald-300">Contact</h3>
               <a
                 href="mailto:info@mymagicalvip.com"
-                className="text-sm text-gray-300 hover:text-amber-300 transition-colors"
+                className="text-sm text-gray-300 hover:text-emerald-300 transition-colors"
               >
                 info@mymagicalvip.com
               </a>
             </div>
 
             <div>
-              <h3 className="font-bold text-lg mb-4 text-amber-300">Follow Us</h3>
+              <h3 className="font-bold text-lg mb-4 text-emerald-300">Follow Us</h3>
               <a
                 href="https://www.facebook.com/My-Magical-VIP-102990822543949"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm text-gray-300 hover:text-amber-300 transition-colors"
+                className="text-sm text-gray-300 hover:text-emerald-300 transition-colors"
               >
                 Facebook
               </a>
             </div>
           </div>
 
-          <div className="border-t border-purple-700 pt-8">
+          <div className="border-t border-emerald-700 pt-8">
             <p className="text-sm text-gray-400 mb-4">
               Copyright ©2025 My Magical VIP
             </p>
