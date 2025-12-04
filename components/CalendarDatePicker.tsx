@@ -4,7 +4,7 @@ import { useState, type ReactNode } from "react";
 
 interface CalendarDatePickerProps {
   numberOfDays: number;
-  onSelectDates: (startDate: Date, endDate: Date) => void;
+  onSelectDates: (selectedDates: Date[]) => void;
   onCancel: () => void;
 }
 
@@ -14,8 +14,7 @@ export default function CalendarDatePicker({
   onCancel,
 }: CalendarDatePickerProps): ReactNode {
   const [currentMonth, setCurrentMonth] = useState(new Date());
-  const [startDate, setStartDate] = useState<Date | null>(null);
-  const [endDate, setEndDate] = useState<Date | null>(null);
+  const [selectedDates, setSelectedDates] = useState<Set<string>>(new Set());
 
   const getDaysInMonth = (date: Date): number => {
     return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
@@ -25,45 +24,35 @@ export default function CalendarDatePicker({
     return new Date(date.getFullYear(), date.getMonth(), 1).getDay();
   };
 
+  const getDateKey = (date: Date): string => {
+    return date.toISOString().split("T")[0];
+  };
+
   const handleDateClick = (day: number): void => {
-    const selectedDate = new Date(
+    const clickedDate = new Date(
       currentMonth.getFullYear(),
       currentMonth.getMonth(),
       day
     );
 
-    if (!startDate) {
-      setStartDate(selectedDate);
-      return;
+    const dateKey = getDateKey(clickedDate);
+    const newSelectedDates = new Set(selectedDates);
+
+    if (newSelectedDates.has(dateKey)) {
+      newSelectedDates.delete(dateKey);
+    } else if (newSelectedDates.size < numberOfDays) {
+      newSelectedDates.add(dateKey);
     }
 
-    if (startDate && !endDate) {
-      const calculatedEndDate = new Date(startDate);
-      calculatedEndDate.setDate(calculatedEndDate.getDate() + numberOfDays - 1);
-
-      if (selectedDate < startDate) {
-        setStartDate(selectedDate);
-        setEndDate(null);
-      } else if (
-        selectedDate.toDateString() === calculatedEndDate.toDateString()
-      ) {
-        setEndDate(calculatedEndDate);
-      } else {
-        setStartDate(selectedDate);
-        setEndDate(null);
-      }
-      return;
-    }
-
-    if (startDate && endDate) {
-      setStartDate(selectedDate);
-      setEndDate(null);
-    }
+    setSelectedDates(newSelectedDates);
   };
 
   const handleConfirm = (): void => {
-    if (startDate && endDate) {
-      onSelectDates(startDate, endDate);
+    if (selectedDates.size === numberOfDays) {
+      const dateArray = Array.from(selectedDates)
+        .sort()
+        .map((dateKey) => new Date(dateKey + "T00:00:00"));
+      onSelectDates(dateArray);
     }
   };
 
@@ -80,50 +69,12 @@ export default function CalendarDatePicker({
   };
 
   const isDateSelected = (day: number): boolean => {
-    if (!startDate) return false;
-
     const date = new Date(
       currentMonth.getFullYear(),
       currentMonth.getMonth(),
       day
     );
-
-    if (startDate && !endDate) {
-      const calculatedEndDate = new Date(startDate);
-      calculatedEndDate.setDate(
-        calculatedEndDate.getDate() + numberOfDays - 1
-      );
-
-      return (
-        date >= startDate && date <= calculatedEndDate
-      );
-    }
-
-    return date >= startDate && endDate && date <= endDate;
-  };
-
-  const isStartDate = (day: number): boolean => {
-    if (!startDate) return false;
-
-    const date = new Date(
-      currentMonth.getFullYear(),
-      currentMonth.getMonth(),
-      day
-    );
-
-    return date.toDateString() === startDate.toDateString();
-  };
-
-  const isEndDate = (day: number): boolean => {
-    if (!endDate) return false;
-
-    const date = new Date(
-      currentMonth.getFullYear(),
-      currentMonth.getMonth(),
-      day
-    );
-
-    return date.toDateString() === endDate.toDateString();
+    return selectedDates.has(getDateKey(date));
   };
 
   const isClickableDate = (day: number): boolean => {
@@ -136,7 +87,8 @@ export default function CalendarDatePicker({
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    return date >= today;
+    // Only allow dates today or in the future
+    return date.getTime() >= today.getTime();
   };
 
   const monthName = currentMonth.toLocaleString("default", {
@@ -155,32 +107,37 @@ export default function CalendarDatePicker({
     days.push(i);
   }
 
+  const sortedSelectedDates = Array.from(selectedDates).sort();
+
   return (
     <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full">
       <h2 className="text-2xl font-bold text-blue-900 mb-2">
         Select Your Trip Dates
       </h2>
       <p className="text-gray-600 text-sm mb-4">
-        {numberOfDays} day{numberOfDays > 1 ? "s" : ""} package - Click to select start date
+        Click to select {numberOfDays} day{numberOfDays > 1 ? "s" : ""} ({selectedDates.size}/{numberOfDays} selected)
       </p>
 
-      {startDate && endDate && (
+      {selectedDates.size > 0 && (
         <div className="bg-blue-50 border border-blue-200 rounded p-3 mb-4">
           <p className="text-sm font-semibold text-blue-900">Selected Dates:</p>
-          <p className="text-sm text-gray-700">
-            {startDate.toLocaleDateString()} to {endDate.toLocaleDateString()}
-          </p>
-        </div>
-      )}
-
-      {startDate && !endDate && (
-        <div className="bg-amber-50 border border-amber-200 rounded p-3 mb-4">
-          <p className="text-sm text-amber-800">
-            Start date: {startDate.toLocaleDateString()}
-          </p>
-          <p className="text-xs text-amber-700 mt-1">
-            Auto-set to include {numberOfDays} days
-          </p>
+          <div className="text-sm text-gray-700 mt-1 max-h-24 overflow-y-auto">
+            {sortedSelectedDates.map((dateKey) => (
+              <div key={dateKey} className="flex justify-between items-center">
+                <span>{new Date(dateKey + "T00:00:00").toLocaleDateString()}</span>
+                <button
+                  onClick={(): void => {
+                    const newSet = new Set(selectedDates);
+                    newSet.delete(dateKey);
+                    setSelectedDates(newSet);
+                  }}
+                  className="text-xs text-red-600 hover:text-red-800 ml-2"
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
@@ -223,14 +180,14 @@ export default function CalendarDatePicker({
                       handleDateClick(day);
                     }
                   }}
-                  disabled={!isClickableDate(day)}
+                  disabled={!isClickableDate(day) || (selectedDates.size >= numberOfDays && !isDateSelected(day))}
                   className={`h-8 w-8 rounded text-sm font-medium transition-colors ${
                     !isClickableDate(day)
                       ? "text-gray-300 cursor-not-allowed"
-                      : isStartDate(day) || isEndDate(day)
-                      ? "bg-emerald-600 text-white"
                       : isDateSelected(day)
-                      ? "bg-emerald-100 text-emerald-900"
+                      ? "bg-emerald-600 text-white"
+                      : selectedDates.size >= numberOfDays
+                      ? "text-gray-300 cursor-not-allowed"
                       : "hover:bg-gray-100 text-gray-800"
                   }`}
                 >
@@ -251,7 +208,7 @@ export default function CalendarDatePicker({
         </button>
         <button
           onClick={handleConfirm}
-          disabled={!startDate || !endDate}
+          disabled={selectedDates.size !== numberOfDays}
           className="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-md font-medium hover:bg-emerald-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
         >
           Confirm

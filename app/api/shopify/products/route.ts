@@ -1,7 +1,7 @@
 import { getProducts } from "@/lib/shopify";
-import type { NextRequest, NextResponse } from "next";
+import type { NextRequest } from "next/server";
 
-export async function GET(request: NextRequest): Promise<NextResponse> {
+export async function GET(request: NextRequest): Promise<Response> {
   try {
     const searchParams = request.nextUrl.searchParams;
     const limit = parseInt(searchParams.get("limit") || "10", 10);

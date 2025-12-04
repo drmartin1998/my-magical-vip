@@ -2,6 +2,7 @@ import Image from "next/image";
 import type { ReactNode } from "react";
 import { getProducts } from "@/lib/shopify";
 import AddToCartButton from "@/components/AddToCartButton";
+import PackagesGrid from "@/components/PackagesGrid";
 
 interface PackageOption {
   id: string;
@@ -14,6 +15,7 @@ interface PackageOption {
     url: string;
     altText: string;
   };
+  maxDays?: number;
 }
 
 interface Step {
@@ -143,30 +145,7 @@ const testimonials: Testimonial[] = [
   },
 ];
 
-export default async function Home() {
-  let packages: PackageOption[] = fallbackPackages;
-
-  try {
-    const shopifyProducts = await getProducts(10);
-    packages = shopifyProducts.map((product, idx) => ({
-      id: product.id,
-      name: product.title,
-      days: product.title.includes("Day")
-        ? product.title.match(/\d+\s+Days?/)?.[0] || `${idx + 1} Day${idx > 0 ? "s" : ""}`
-        : "Package",
-      price: `$${parseFloat(product.priceRange.minVariantPrice.amount).toFixed(2)}`,
-      description: product.description || "",
-      image: product.featuredImage
-        ? {
-            url: product.featuredImage.url,
-            altText: product.featuredImage.altText || product.title,
-          }
-        : undefined,
-    }));
-  } catch (error) {
-    console.error("Failed to fetch Shopify products, using fallback packages:", error);
-  }
-
+function HomePageClient({ packages }: { packages: PackageOption[] }) {
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation Bar */}
@@ -253,50 +232,7 @@ export default async function Home() {
             for day of visit.
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {packages.map((pkg, idx) => (
-              <div
-                key={idx}
-                className="bg-white border-2 border-blue-200 rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden hover:border-blue-400"
-              >
-                {pkg.image && (
-                  <div className="relative w-full h-48 bg-gray-200">
-                    <Image
-                      src={pkg.image.url}
-                      alt={pkg.image.altText}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    />
-                  </div>
-                )}
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold text-blue-900 mb-2">
-                    {pkg.name}
-                  </h3>
-                  <p className="text-sm text-emerald-600 font-semibold mb-4">
-                    {pkg.days}
-                  </p>
-                  <p className="text-gray-700 mb-6 leading-relaxed">
-                    {pkg.description}
-                  </p>
-
-                  <div className="mb-6">
-                    <span className="text-3xl font-bold text-emerald-600">
-                      {pkg.price}
-                    </span>
-                    {pkg.originalPrice && (
-                      <span className="ml-2 text-sm text-gray-500 line-through">
-                        {pkg.originalPrice}
-                      </span>
-                    )}
-                  </div>
-
-                  <AddToCartButton productId={pkg.id} productName={pkg.name} />
-                </div>
-              </div>
-            ))}
-          </div>
+          <PackagesGrid packages={packages} />
         </div>
       </section>
 
@@ -448,4 +384,33 @@ export default async function Home() {
       </footer>
     </div>
   );
+}
+
+export default async function Home() {
+  let packages: PackageOption[] = fallbackPackages;
+
+  try {
+    const shopifyProducts = await getProducts(10);
+    packages = shopifyProducts.map((product, idx) => ({
+      id: product.id,
+      name: product.title,
+      days: product.title.includes("Day")
+        ? product.title.match(/\d+\s+Days?/)?.[0] || `${idx + 1} Day${idx > 0 ? "s" : ""}`
+        : "Package",
+      price: `$${parseFloat(product.priceRange.minVariantPrice.amount).toFixed(2)}`,
+      description: product.description || "",
+      image: product.featuredImage
+        ? {
+            url: product.featuredImage.url,
+            altText: product.featuredImage.altText || product.title,
+          }
+        : undefined,
+      maxDays: product.metafield?.value ? parseInt(product.metafield.value, 10) : undefined,
+    }));
+  } catch (error) {
+    console.error("Failed to fetch Shopify products, using fallback packages:", error);
+  }
+
+  // Render client component for modal logic
+  return <HomePageClient packages={packages} />;
 }

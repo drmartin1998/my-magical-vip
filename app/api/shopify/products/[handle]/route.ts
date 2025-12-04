@@ -1,12 +1,12 @@
 import { getProductByHandle } from "@/lib/shopify";
-import type { NextRequest, NextResponse } from "next";
+import type { NextRequest } from "next/server";
 
 export async function GET(
   _request: NextRequest,
-  { params }: { params: Promise<{ handle: string }> }
-): Promise<NextResponse> {
+  { params }: { params: { handle: string } }
+): Promise<Response> {
   try {
-    const { handle } = await params;
+    const { handle } = params;
     const product = await getProductByHandle(handle);
 
     if (!product) {

@@ -1,5 +1,5 @@
 import { createCart } from "@/lib/shopify";
-import type { NextRequest, NextResponse } from "next";
+import type { NextRequest } from "next/server";
 
 interface CartRequestBody {
   lineItems: Array<{
@@ -8,7 +8,7 @@ interface CartRequestBody {
   }>;
 }
 
-export async function POST(request: NextRequest): Promise<NextResponse> {
+export async function POST(request: NextRequest): Promise<Response> {
   try {
     const body: CartRequestBody = await request.json();
 
