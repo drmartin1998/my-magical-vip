@@ -3,10 +3,10 @@ import type { NextRequest } from "next/server";
 
 export async function GET(
   _request: NextRequest,
-  { params }: { params: { handle: string } }
+  context: { params: Promise<{ handle: string }> }
 ): Promise<Response> {
   try {
-    const { handle } = params;
+    const { handle } = await context.params;
     const product = await getProductByHandle(handle);
 
     if (!product) {
