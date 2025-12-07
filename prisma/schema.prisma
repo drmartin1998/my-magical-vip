@@ -1,0 +1,31 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider  = "postgresql"
+}
+
+model Appointment {
+  id             Int      @id @default(autoincrement())
+  shopifyOrderId String
+  lineItemId     String
+  date           DateTime @db.Date
+  park           String
+  attraction     String?
+  type           String?
+}
+
+model Blackoutdate {
+  id   Int      @id @default(autoincrement())
+  date DateTime @db.Date
+}
+
+model WaitingListEntry {
+  id    Int      @id @default(autoincrement())
+  name  String
+  email String?
+  date  DateTime @db.Date
+  park  String
+}

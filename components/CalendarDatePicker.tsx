@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 interface CalendarDatePickerProps {
   numberOfDays: number;
@@ -15,6 +15,23 @@ export default function CalendarDatePicker({
 }: CalendarDatePickerProps): ReactNode {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDates, setSelectedDates] = useState<Set<string>>(new Set());
+  const [blackoutDates, setBlackoutDates] = useState<Set<string>>(new Set());
+
+  useEffect((): void => {
+    const fetchBlackoutDates = async (): Promise<void> => {
+      try {
+        const response = await fetch("/api/blackout-dates");
+        if (response.ok) {
+          const data = (await response.json()) as { blackoutDates: string[] };
+          setBlackoutDates(new Set(data.blackoutDates));
+        }
+      } catch (error) {
+        console.error("Error fetching blackout dates:", error);
+      }
+    };
+
+    fetchBlackoutDates();
+  }, []);
 
   const getDaysInMonth = (date: Date): number => {
     return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
@@ -87,8 +104,14 @@ export default function CalendarDatePicker({
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // Only allow dates today or in the future
-    return date.getTime() >= today.getTime();
+    // Check if date is in past
+    if (date.getTime() < today.getTime()) {
+      return false;
+    }
+
+    // Check if date is blackout
+    const dateKey = getDateKey(date);
+    return !blackoutDates.has(dateKey);
   };
 
   const monthName = currentMonth.toLocaleString("default", {
@@ -183,13 +206,22 @@ export default function CalendarDatePicker({
                   disabled={!isClickableDate(day) || (selectedDates.size >= numberOfDays && !isDateSelected(day))}
                   className={`h-8 w-8 rounded text-sm font-medium transition-colors ${
                     !isClickableDate(day)
-                      ? "text-gray-300 cursor-not-allowed"
+                      ? "text-gray-300 cursor-not-allowed bg-red-100"
                       : isDateSelected(day)
                       ? "bg-emerald-600 text-white"
                       : selectedDates.size >= numberOfDays
                       ? "text-gray-300 cursor-not-allowed"
                       : "hover:bg-gray-100 text-gray-800"
                   }`}
+                  title={
+                    !isClickableDate(day) && blackoutDates.has(getDateKey(new Date(
+                      currentMonth.getFullYear(),
+                      currentMonth.getMonth(),
+                      day
+                    )))
+                      ? "Blackout date"
+                      : undefined
+                  }
                 >
                   {day}
                 </button>

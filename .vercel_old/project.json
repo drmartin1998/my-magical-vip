@@ -1,0 +1,16 @@
+{
+  "projectId": "prj_Qwb0ZYKHqQA02CJfIflRG0EpbTYh",
+  "orgId": "team_kdebSwVcnAIICIHQgIcaI3QO",
+  "projectName": "my-magical-vip",
+  "settings": {
+    "createdAt": 1764678924661,
+    "framework": "nextjs",
+    "devCommand": null,
+    "installCommand": null,
+    "buildCommand": null,
+    "outputDirectory": null,
+    "rootDirectory": null,
+    "directoryListing": false,
+    "nodeVersion": "24.x"
+  }
+}
