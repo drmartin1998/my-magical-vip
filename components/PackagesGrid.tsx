@@ -60,7 +60,7 @@ export default function PackagesGrid({ packages }: PackagesGridProps): ReactNode
         const numberOfDays = getNumberOfDays(pkg);
         const selected = selectedDates[pkg.id];
         return (
-          <div
+          <article
             key={idx}
             className="bg-white border-2 border-blue-200 rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden hover:border-blue-400"
           >
@@ -123,7 +123,7 @@ export default function PackagesGrid({ packages }: PackagesGridProps): ReactNode
                 }}
               />
             </div>
-          </div>
+          </article>
         );
       })}
     </div>

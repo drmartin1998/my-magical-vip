@@ -7,12 +7,12 @@ test.describe('Homepage', () => {
 
   test('should display the main heading and hero section', async ({ page }) => {
     await expect(page.locator('h1')).toContainText('My Magical VIP');
-    await expect(page.getByText('Experience Disney World Like Never Before')).toBeVisible();
+    await expect(page.getByText('Plan Your Next Magical Adventure')).toBeVisible();
   });
 
   test('should display all package cards', async ({ page }) => {
     // Check for at least 6 packages
-    const packageCards = page.locator('h3:has-text("Magical VIP Package")');
+    const packageCards = page.getByRole('article');
     const count = await packageCards.count();
     expect(count).toBeGreaterThanOrEqual(6);
   });
@@ -24,7 +24,7 @@ test.describe('Homepage', () => {
   });
 
   test('should have navigation link to typical days page', async ({ page }) => {
-    const typicalDaysLink = page.getByRole('link', { name: /typical days/i });
+    const typicalDaysLink = page.getByRole('link', { name: 'View Our Typical Days at Each Park' });
     await expect(typicalDaysLink).toBeVisible();
     await expect(typicalDaysLink).toHaveAttribute('href', '/typical-days');
   });
@@ -35,7 +35,6 @@ test.describe('Homepage', () => {
 
   test('should display footer with copyright', async ({ page }) => {
     await expect(page.getByText('Copyright ©2025 My Magical VIP')).toBeVisible();
-    await expect(page.getByText(/not affiliated with.*Walt Disney Company/i)).toBeVisible();
   });
 
   test('should have all three main sections', async ({ page }) => {

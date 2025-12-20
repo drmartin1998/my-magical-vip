@@ -8,7 +8,7 @@ test.describe('Calendar Date Picker', () => {
   test('should open calendar modal when clicking Get Started', async ({ page }) => {
     await page.getByRole('button', { name: 'Get Started' }).first().click();
     await expect(page.getByText('Select Your Trip Dates')).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Confirm Dates' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Confirm' })).toBeVisible();
   });
 
   test('should display current month and navigation arrows', async ({ page }) => {
@@ -17,8 +17,10 @@ test.describe('Calendar Date Picker', () => {
     const monthYear = page.locator('text=/January|February|March|April|May|June|July|August|September|October|November|December/');
     await expect(monthYear).toBeVisible();
     
-    const prevButton = page.locator('button:has-text("‹")');
-    const nextButton = page.locator('button:has-text("›")');
+    // const prevButton = page.locator('button:has-text("‹")');
+    // const nextButton = page.locator('button:has-text("›")');
+    const prevButton = page.getByRole('button', { name: 'Previous month' });
+    const nextButton = page.getByRole('button', { name: 'Next month' });
     await expect(prevButton).toBeVisible();
     await expect(nextButton).toBeVisible();
   });
@@ -27,7 +29,7 @@ test.describe('Calendar Date Picker', () => {
     await page.getByRole('button', { name: 'Get Started' }).first().click();
     
     const monthYearBefore = await page.locator('text=/\\w+ \\d{4}/').first().textContent();
-    await page.locator('button:has-text("›")').click();
+    await page.getByRole('button', { name: 'Next month' }).click();
     const monthYearAfter = await page.locator('text=/\\w+ \\d{4}/').first().textContent();
     
     expect(monthYearBefore).not.toBe(monthYearAfter);
@@ -35,9 +37,9 @@ test.describe('Calendar Date Picker', () => {
 
   test('should close modal when clicking close button', async ({ page }) => {
     await page.getByRole('button', { name: 'Get Started' }).first().click();
-    await expect(page.getByText('Select Your Visit Dates')).toBeVisible();
+    await expect(page.getByText('Select Your Trip Dates')).toBeVisible();
     
-    await page.getByRole('button', { name: '✕' }).click();
-    await expect(page.getByText('Select Your Visit Dates')).not.toBeVisible();
+    await page.getByRole('button', { name: 'Cancel' }).click();
+    await expect(page.getByText('Select Your Trip Dates')).not.toBeVisible();
   });
 });

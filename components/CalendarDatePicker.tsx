@@ -268,6 +268,7 @@ export default function CalendarDatePicker({
           onClick={handleConfirm}
           disabled={selectedDates.size !== numberOfDays}
           className="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-md font-medium hover:bg-emerald-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+          name="Confirm Dates"
         >
           Confirm
         </button>
