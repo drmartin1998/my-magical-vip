@@ -16,6 +16,9 @@ interface PackageOption {
     altText: string;
   };
   maxDays?: number;
+  variants?: Array<{
+    id: string;
+  }>;
 }
 
 interface Step {
@@ -151,7 +154,8 @@ function HomePageClient({ packages }: { packages: PackageOption[] }) {
       {/* Navigation Bar */}
       <nav className="w-full py-4 px-4 sm:px-6 lg:px-8 shadow-lg text-white" style={{ backgroundImage: 'url(/global-nav-bg.png)' }}>
         <div className="flex items-center justify-between">
-          <a href="/" className="font-bold text-lg text-black hover:text-gray-700 transition-colors">
+          <a href="/" className="flex items-center gap-2 font-bold text-lg text-black hover:text-gray-700 transition-colors">
+            <Image src="/key-logo.png" alt="Key Logo" width={48} height={48} className="h-12 w-auto" />
             My Magical VIP
           </a>
           <ul className="flex gap-6 text-sm font-bold">
@@ -406,6 +410,7 @@ export default async function Home() {
           }
         : undefined,
       maxDays: product.metafield?.value ? parseInt(product.metafield.value, 10) : undefined,
+      variants: product.variants,
     }));
   } catch (error) {
     console.error("Failed to fetch Shopify products, using fallback packages:", error);

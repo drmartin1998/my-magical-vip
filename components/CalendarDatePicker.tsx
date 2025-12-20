@@ -109,9 +109,33 @@ export default function CalendarDatePicker({
       return false;
     }
 
+    // Check if date is more than 180 days out
+    const maxDate = new Date(today);
+    maxDate.setDate(maxDate.getDate() + 180);
+    if (date.getTime() > maxDate.getTime()) {
+      return false;
+    }
+
     // Check if date is blackout
     const dateKey = getDateKey(date);
     return !blackoutDates.has(dateKey);
+  };
+
+  const canGoToNextMonth = (): boolean => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const maxDate = new Date(today);
+    maxDate.setDate(maxDate.getDate() + 180);
+    
+    const nextMonthDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1);
+    return nextMonthDate.getTime() <= maxDate.getTime();
+  };
+
+  const canGoToPreviousMonth = (): boolean => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const firstDayOfCurrentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
+    return firstDayOfCurrentMonth.getTime() > today.getTime();
   };
 
   const monthName = currentMonth.toLocaleString("default", {
@@ -168,7 +192,8 @@ export default function CalendarDatePicker({
         <div className="flex items-center justify-between mb-4">
           <button
             onClick={previousMonth}
-            className="p-2 hover:bg-gray-100 rounded transition-colors"
+            disabled={!canGoToPreviousMonth()}
+            className="p-2 text-blue-600 hover:bg-blue-50 rounded transition-colors disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent text-xl font-bold"
             aria-label="Previous month"
           >
             ←
@@ -176,7 +201,8 @@ export default function CalendarDatePicker({
           <h3 className="text-lg font-semibold text-gray-800">{monthName}</h3>
           <button
             onClick={nextMonth}
-            className="p-2 hover:bg-gray-100 rounded transition-colors"
+            disabled={!canGoToNextMonth()}
+            className="p-2 text-blue-600 hover:bg-blue-50 rounded transition-colors disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent text-xl font-bold"
             aria-label="Next month"
           >
             →

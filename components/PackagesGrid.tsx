@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState, type ReactNode } from "react";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/navigation";
 import AddToCartButton from "@/components/AddToCartButton";
 
 const PackageDateModal = dynamic(() => import("@/components/PackageDateModal"), { ssr: false });
@@ -19,6 +20,9 @@ interface PackageOption {
     altText: string;
   };
   maxDays?: number;
+  variants?: Array<{
+    id: string;
+  }>;
 }
 
 interface PackagesGridProps {
@@ -26,6 +30,7 @@ interface PackagesGridProps {
 }
 
 export default function PackagesGrid({ packages }: PackagesGridProps): ReactNode {
+  const router = useRouter();
   const [modalOpen, setModalOpen] = useState<string | null>(null);
   const [selectedDates, setSelectedDates] = useState<Record<string, Date[]>>({});
 
@@ -35,6 +40,18 @@ export default function PackagesGrid({ packages }: PackagesGridProps): ReactNode
     }
     const match = pkg.days.match(/\d+/);
     return match ? parseInt(match[0], 10) : 1;
+  };
+
+  const handleDatesSelected = (packageId: string, dates: Date[]): void => {
+    setSelectedDates((prev) => ({ ...prev, [packageId]: dates }));
+    
+    // Get the variant ID if available, otherwise use the product ID
+    const pkg = packages.find(p => p.id === packageId);
+    const variantId = pkg?.variants?.[0]?.id || packageId;
+    
+    // Navigate to park selection page with dates and variantId
+    const datesParam = encodeURIComponent(JSON.stringify(dates.map(d => d.toISOString())));
+    router.push(`/park-selection?dates=${datesParam}&packageId=${variantId}`);
   };
 
   return (
@@ -97,13 +114,12 @@ export default function PackagesGrid({ packages }: PackagesGridProps): ReactNode
                   )}
                 </div>
               )}
-              <AddToCartButton productId={pkg.id} productName={pkg.name} />
               <PackageDateModal
                 isOpen={modalOpen === pkg.id}
                 onClose={(): void => setModalOpen(null)}
                 numberOfDays={numberOfDays}
                 onDatesSelected={(dates): void => {
-                  setSelectedDates((prev) => ({ ...prev, [pkg.id]: dates }));
+                  handleDatesSelected(pkg.id, dates);
                 }}
               />
             </div>

@@ -135,6 +135,9 @@ export async function getProducts(first: number = 10): Promise<
       url: string;
       altText: string;
     };
+    variants: Array<{
+      id: string;
+    }>;
   }>
 > {
   const query = `
@@ -156,6 +159,13 @@ export async function getProducts(first: number = 10): Promise<
             featuredImage {
               url
               altText
+            }
+            variants(first: 1) {
+              edges {
+                node {
+                  id
+                }
+              }
             }
           }
         }
@@ -182,13 +192,24 @@ export async function getProducts(first: number = 10): Promise<
             url: string;
             altText: string;
           };
+          variants: {
+            edges: Array<{
+              node: {
+                id: string;
+              };
+            }>;
+          };
         };
       }>;
     };
   }>(query, { first });
 
-  return result.products.edges.map((edge) => edge.node);
+  return result.products.edges.map((edge) => ({
+    ...edge.node,
+    variants: edge.node.variants.edges.map((v) => v.node),
+  }));
 }
+
 
 /**
  * Get a single product by handle
