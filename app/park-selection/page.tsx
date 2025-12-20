@@ -21,12 +21,14 @@ function ParkSelectionContent(): ReactNode {
   const [selectedDates, setSelectedDates] = useState<Date[]>([]);
   const [dayParks, setDayParks] = useState<DayParks>({});
   const [packageId, setPackageId] = useState<string>("");
+  const [productType, setProductType] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     // Parse dates from URL
     const datesParam = searchParams.get("dates");
     const pkgId = searchParams.get("packageId");
+    const prodType = searchParams.get("productType");
     
     if (!datesParam || !pkgId) {
       router.push("/");
@@ -34,6 +36,7 @@ function ParkSelectionContent(): ReactNode {
     }
 
     setPackageId(pkgId);
+    setProductType(prodType || "");
     
     try {
       const dates = JSON.parse(decodeURIComponent(datesParam)) as string[];
@@ -90,7 +93,7 @@ function ParkSelectionContent(): ReactNode {
     // Navigate to confirmation page with all data
     const datesParam = encodeURIComponent(JSON.stringify(selectedDates.map(d => d.toISOString())));
     const parksParam = encodeURIComponent(JSON.stringify(dayParks));
-    router.push(`/booking-confirmation?dates=${datesParam}&parks=${parksParam}&packageId=${packageId}`);
+    router.push(`/booking-confirmation?dates=${datesParam}&parks=${parksParam}&packageId=${packageId}&productType=${encodeURIComponent(productType)}`);
   };
 
   if (isLoading) {

@@ -5,6 +5,10 @@ interface CartRequestBody {
   lineItems: Array<{
     merchandiseId: string;
     quantity: number;
+    attributes?: Array<{
+      key: string;
+      value: string;
+    }>;
   }>;
 }
 

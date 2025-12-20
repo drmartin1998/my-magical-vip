@@ -11,6 +11,7 @@ interface PackageOption {
   price: string;
   originalPrice?: string;
   description: string;
+  productType?: string;
   image?: {
     url: string;
     altText: string;

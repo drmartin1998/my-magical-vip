@@ -124,6 +124,7 @@ export async function getProducts(first: number = 10): Promise<
     title: string;
     handle: string;
     description: string;
+    productType: string;
     metafield?: { value: string } | null;
     priceRange: {
       minVariantPrice: {
@@ -149,6 +150,7 @@ export async function getProducts(first: number = 10): Promise<
             title
             handle
             description
+            productType
             metafield(namespace: "my_fields", key: "day_limit") { value }
             priceRange {
               minVariantPrice {
@@ -181,6 +183,7 @@ export async function getProducts(first: number = 10): Promise<
           title: string;
           handle: string;
           description: string;
+          productType: string;
           metafield?: { value: string } | null;
           priceRange: {
             minVariantPrice: {
@@ -327,6 +330,10 @@ export async function getProductByHandle(handle: string): Promise<{
 export async function createCart(lineItems: Array<{
   merchandiseId: string;
   quantity: number;
+  attributes?: Array<{
+    key: string;
+    value: string;
+  }>;
 }>): Promise<{
   id: string;
   checkoutUrl: string;

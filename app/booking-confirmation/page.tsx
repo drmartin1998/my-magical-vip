@@ -21,6 +21,7 @@ function BookingConfirmationContent(): ReactNode {
   const [selectedDates, setSelectedDates] = useState<Date[]>([]);
   const [dayParks, setDayParks] = useState<DayParks>({});
   const [packageId, setPackageId] = useState<string>("");
+  const [productType, setProductType] = useState<string>("");
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -28,6 +29,7 @@ function BookingConfirmationContent(): ReactNode {
     const datesParam = searchParams.get("dates");
     const parksParam = searchParams.get("parks");
     const pkgId = searchParams.get("packageId");
+    const prodType = searchParams.get("productType");
 
     if (!datesParam || !parksParam || !pkgId) {
       router.push("/");
@@ -35,6 +37,7 @@ function BookingConfirmationContent(): ReactNode {
     }
 
     setPackageId(pkgId);
+    setProductType(prodType || "");
 
     try {
       const dates = JSON.parse(decodeURIComponent(datesParam)) as string[];
@@ -62,6 +65,18 @@ function BookingConfirmationContent(): ReactNode {
       sessionStorage.setItem("selectedDates", JSON.stringify(selectedDates.map(d => d.toISOString())));
       sessionStorage.setItem("agreedToTerms", "true");
 
+      // Format booking dates: date,park1,park2|date,park1,park2
+      const bookingDatesString = selectedDates
+        .map((date) => {
+          const dateKey = date.toISOString().split("T")[0];
+          const parks = dayParks[dateKey] || [];
+          return `${dateKey},${parks.join(",")}`;
+        })
+        .join("|");
+
+      // Generate unique line item ID
+      const lineItemID = crypto.randomUUID();
+
       // Create cart with the packageId (which is now the variant ID)
       const response = await fetch("/api/shopify/cart", {
         method: "POST",
@@ -73,6 +88,20 @@ function BookingConfirmationContent(): ReactNode {
             {
               merchandiseId: packageId,
               quantity: 1,
+              attributes: [
+                {
+                  key: "bookingDates",
+                  value: bookingDatesString,
+                },
+                {
+                  key: "lineItemID",
+                  value: lineItemID,
+                },
+                {
+                  key: "productType",
+                  value: productType,
+                },
+              ],
             },
           ],
         }),

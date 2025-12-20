@@ -15,6 +15,7 @@ interface PackageOption {
   price: string;
   originalPrice?: string;
   description: string;
+  productType?: string;
   image?: {
     url: string;
     altText: string;
@@ -48,10 +49,11 @@ export default function PackagesGrid({ packages }: PackagesGridProps): ReactNode
     // Get the variant ID if available, otherwise use the product ID
     const pkg = packages.find(p => p.id === packageId);
     const variantId = pkg?.variants?.[0]?.id || packageId;
+    const productType = pkg?.productType || "";
     
-    // Navigate to park selection page with dates and variantId
+    // Navigate to park selection page with dates, variantId, and productType
     const datesParam = encodeURIComponent(JSON.stringify(dates.map(d => d.toISOString())));
-    router.push(`/park-selection?dates=${datesParam}&packageId=${variantId}`);
+    router.push(`/park-selection?dates=${datesParam}&packageId=${variantId}&productType=${encodeURIComponent(productType)}`);
   };
 
   return (
