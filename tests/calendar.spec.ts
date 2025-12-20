@@ -7,7 +7,7 @@ test.describe('Calendar Date Picker', () => {
 
   test('should open calendar modal when clicking Get Started', async ({ page }) => {
     await page.getByRole('button', { name: 'Get Started' }).first().click();
-    await expect(page.getByText('Select Your Visit Dates')).toBeVisible();
+    await expect(page.getByText('Select Your Trip Dates')).toBeVisible();
     await expect(page.getByRole('button', { name: 'Confirm Dates' })).toBeVisible();
   });
 
