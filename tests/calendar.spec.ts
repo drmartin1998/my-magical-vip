@@ -28,9 +28,12 @@ test.describe('Calendar Date Picker', () => {
   test('should navigate to next month', async ({ page }) => {
     await page.getByRole('button', { name: 'Get Started' }).first().click();
     
-    const monthYearBefore = await page.locator('text=/\\w+ \\d{4}/').first().textContent();
+    const monthHeading = page.getByTestId('calendar-month');
+    const monthYearBefore = await monthHeading.textContent();
+    
     await page.getByRole('button', { name: 'Next month' }).click();
-    const monthYearAfter = await page.locator('text=/\\w+ \\d{4}/').first().textContent();
+    
+    const monthYearAfter = await monthHeading.textContent();
     
     expect(monthYearBefore).not.toBe(monthYearAfter);
   });

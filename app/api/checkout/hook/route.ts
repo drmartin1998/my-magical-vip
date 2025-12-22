@@ -36,6 +36,10 @@ function verifyShopifyWebhook(body: string, hmacHeader: string | null): boolean 
     .update(body, "utf8")
     .digest("base64");
 
+console.log("Computed hash:", hash);
+console.log("Received HMAC header:", hmacHeader);
+
+
   return crypto.timingSafeEqual(
     Buffer.from(hash),
     Buffer.from(hmacHeader)
@@ -46,9 +50,9 @@ export async function POST(request: NextRequest): Promise<Response> {
   try {
     // Get the raw body for HMAC verification
     const body = await request.text();
-    const hmacHeader = request.headers.get("x-shopify-hmac-sha256");
+    const hmacHeader = request.headers.get("X-Shopify-Hmac-Sha256");
 
-    // Verify webhook signature
+    //Verify webhook signature
     if (!verifyShopifyWebhook(body, hmacHeader)) {
       console.error("Invalid webhook signature");
       return Response.json(

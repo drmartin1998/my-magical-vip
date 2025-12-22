@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
+import { useRouter } from "next/navigation";
 
 interface CalendarDatePickerProps {
   numberOfDays: number;
@@ -13,6 +14,7 @@ export default function CalendarDatePicker({
   onSelectDates,
   onCancel,
 }: CalendarDatePickerProps): ReactNode {
+  const router = useRouter();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDates, setSelectedDates] = useState<Set<string>>(new Set());
   const [blackoutDates, setBlackoutDates] = useState<Set<string>>(new Set());
@@ -198,7 +200,7 @@ export default function CalendarDatePicker({
           >
             ←
           </button>
-          <h3 className="text-lg font-semibold text-gray-800">{monthName}</h3>
+          <h3 className="text-lg font-semibold text-gray-800" data-testid="calendar-month">{monthName}</h3>
           <button
             onClick={nextMonth}
             disabled={!canGoToNextMonth()}
@@ -256,6 +258,20 @@ export default function CalendarDatePicker({
           ))}
         </div>
       </div>
+
+      {blackoutDates.size > 0 && (
+        <div className="mb-4 bg-amber-50 border border-amber-200 rounded p-3">
+          <p className="text-sm text-amber-800">
+            <span className="font-semibold">Blacked out dates?</span> Can&apos;t find available dates?{" "}
+            <button
+              onClick={() => router.push("/waiting-list")}
+              className="text-blue-600 hover:text-blue-800 underline font-medium"
+            >
+              Join our waiting list
+            </button>
+          </p>
+        </div>
+      )}
 
       <div className="flex gap-3">
         <button
