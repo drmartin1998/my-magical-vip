@@ -193,9 +193,13 @@ export default function TypicalDaysPage() {
                 </div>
 
                 <div className="mt-6 pt-6 border-t border-blue-200">
-                  <button className="bg-gradient-to-r from-blue-500 to-emerald-500 hover:from-blue-600 hover:to-emerald-600 text-white font-bold py-3 px-8 rounded-lg transition-all shadow-md">
+                  <a
+                    href="/park-selection"
+                    className="inline-block text-white font-bold py-3 px-8 rounded-full shadow-lg green-button hover:shadow-xl transition-shadow"
+                    style={{ textShadow: '2px 2px 2px #333333' }}
+                  >
                     Book Now
-                  </button>
+                  </a>
                 </div>
               </div>
             ))}
@@ -250,9 +254,13 @@ export default function TypicalDaysPage() {
             Contact us today to book your personalized Disney experience. Our
             guides are ready to help you make the most of your park visit!
           </p>
-          <button className="inline-block bg-gradient-to-r from-blue-500 to-emerald-500 hover:from-blue-600 hover:to-emerald-600 text-white font-bold py-4 px-12 rounded-lg transition-all shadow-md text-lg">
+          <a
+            href="/park-selection"
+            className="inline-block text-white font-bold py-4 px-12 rounded-full shadow-lg green-button hover:shadow-xl transition-shadow text-lg"
+            style={{ textShadow: '2px 2px 2px #333333' }}
+          >
             Get Started Today
-          </button>
+          </a>
         </div>
       </section>
 
