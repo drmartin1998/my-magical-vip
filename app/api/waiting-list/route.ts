@@ -12,35 +12,31 @@ interface WaitingListRequest {
   name: string;
   email: string;
   days: DayPark[];
-  recaptchaToken: string;
 }
 
-async function verifyRecaptcha(token: string): Promise<boolean> {
-  const secretKey = process.env.GOOGLE_RECAPTCHA_SECRET;
+function isBot(request: NextRequest): boolean {
+  // Skip bot check in test/CI environment
+  if (process.env.NODE_ENV === 'test' || process.env.CI === 'true') {
+    return false;
+  }
+
+  // Check Vercel's bot detection header
+  const botId = request.headers.get('x-vercel-id');
+  const isVercelBot = request.headers.get('x-vercel-bot');
   
-  if (!secretKey) {
-    console.error("GOOGLE_RECAPTCHA_SECRET not configured");
-    return false;
+  // If x-vercel-bot header is present and set to '1', it's a bot
+  if (isVercelBot === '1') {
+    return true;
   }
-
-  try {
-    const response = await fetch(
-      "https://www.google.com/recaptcha/api/siteverify",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: `secret=${secretKey}&response=${token}`,
-      }
-    );
-
-    const data = await response.json() as { success: boolean; score?: number };
-    return data.success;
-  } catch (error) {
-    console.error("Error verifying reCAPTCHA:", error);
-    return false;
-  }
+  
+  // Additional user-agent based bot detection as fallback
+  const userAgent = request.headers.get('user-agent')?.toLowerCase() || '';
+  const botPatterns = [
+    'bot', 'crawler', 'spider', 'scraper',
+    'curl', 'wget', 'python-requests', 'postman'
+  ];
+  
+  return botPatterns.some(pattern => userAgent.includes(pattern));
 }
 async function sendWaitingListEmail(
   name: string,
@@ -128,22 +124,21 @@ ${daysFormatted}`,
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
+    // Check for bot traffic
+    if (isBot(request)) {
+      return NextResponse.json(
+        { error: "Bot traffic detected" },
+        { status: 403 }
+      );
+    }
+
     const body = (await request.json()) as WaitingListRequest;
-    const { name, email, days, recaptchaToken } = body;
+    const { name, email, days } = body;
 
     // Validation
     if (!name || !email || !days || days.length === 0) {
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 }
-      );
-    }
-
-    // Verify reCAPTCHA
-    const isRecaptchaValid = await verifyRecaptcha(recaptchaToken);
-    if (!isRecaptchaValid) {
-      return NextResponse.json(
-        { error: "reCAPTCHA verification failed" },
         { status: 400 }
       );
     }

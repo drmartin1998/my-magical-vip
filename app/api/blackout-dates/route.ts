@@ -4,7 +4,18 @@ import { auth0 } from '@/lib/auth0';
 
 export async function GET(request: NextRequest): Promise<Response> {
   try {
-    // Check authentication
+    const searchParams = request.nextUrl.searchParams;
+    
+    // Support legacy format (public) if no pagination params
+    if (!searchParams.has('page') && !searchParams.has('pageSize')) {
+      const blackoutDates = await getBlackoutDates();
+      const dateStrings = blackoutDates.map((date) =>
+        date.toISOString().split("T")[0]
+      );
+      return Response.json({ blackoutDates: dateStrings });
+    }
+
+    // For paginated requests (admin), check authentication
     const session = await auth0.getSession(request);
     
     if (!session) {
@@ -12,17 +23,6 @@ export async function GET(request: NextRequest): Promise<Response> {
         { error: 'Unauthorized' },
         { status: 401 }
       );
-    }
-
-    const searchParams = request.nextUrl.searchParams;
-    
-    // Support legacy format if no pagination params
-    if (!searchParams.has('page') && !searchParams.has('pageSize')) {
-      const blackoutDates = await getBlackoutDates();
-      const dateStrings = blackoutDates.map((date) =>
-        date.toISOString().split("T")[0]
-      );
-      return Response.json({ blackoutDates: dateStrings });
     }
 
     // Parse pagination params
