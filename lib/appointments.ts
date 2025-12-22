@@ -1,5 +1,5 @@
 import prisma from "./prisma";
-import { Prisma } from "./generated/prisma";
+import { Prisma } from "./generated/prisma/client";
 
 export interface AppointmentFilters {
   park?: string;
