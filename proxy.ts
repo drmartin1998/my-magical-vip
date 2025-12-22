@@ -1,7 +1,7 @@
 import { auth0 } from "./lib/auth0";
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 
-export async function proxy(request: Request) {
+export async function proxy(request: NextRequest) {
   const url = new URL(request.url);
   
   // Let Auth0 middleware handle /auth/* routes
@@ -11,7 +11,7 @@ export async function proxy(request: Request) {
   
   // Protect /admin routes
   if (url.pathname.startsWith('/admin')) {
-    const session = await auth0.getSession(new Request(request));
+    const session = await auth0.getSession(request);
     
     if (!session) {
       const loginUrl = new URL('/auth/login', request.url);
