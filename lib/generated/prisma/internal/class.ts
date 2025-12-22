@@ -20,7 +20,7 @@ const config: runtime.GetPrismaClientConfig = {
   "clientVersion": "7.1.0",
   "engineVersion": "ab635e6b9d606fa5c8fb8b1a7f909c3c3c1c98ba",
   "activeProvider": "postgresql",
-  "inlineSchema": "generator client {\n  provider = \"prisma-client\"\n  output   = \"../lib/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n\nmodel Appointment {\n  id             Int      @id @default(autoincrement())\n  shopifyOrderId String\n  lineItemId     String\n  date           DateTime @db.Date\n  park           String\n  attraction     String?\n  type           String?\n}\n\nmodel Blackoutdate {\n  id   Int      @id @default(autoincrement())\n  date DateTime @db.Date\n}\n\nmodel WaitingListEntry {\n  id    Int      @id @default(autoincrement())\n  name  String\n  email String?\n  date  DateTime @db.Date\n  park  String\n}\n",
+  "inlineSchema": "generator client {\n  provider   = \"prisma-client\"\n  output     = \"../lib/generated/prisma\"\n  engineType = \"client\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n\nmodel Appointment {\n  id             Int      @id @default(autoincrement())\n  shopifyOrderId String\n  lineItemId     String\n  date           DateTime @db.Date\n  park           String\n  attraction     String?\n  type           String?\n}\n\nmodel Blackoutdate {\n  id   Int      @id @default(autoincrement())\n  date DateTime @db.Date\n}\n\nmodel WaitingListEntry {\n  id    Int      @id @default(autoincrement())\n  name  String\n  email String?\n  date  DateTime @db.Date\n  park  String\n}\n",
   "runtimeDataModel": {
     "models": {},
     "enums": {},

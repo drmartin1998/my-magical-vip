@@ -9,6 +9,8 @@ export default defineConfig({
     path: "prisma/migrations",
   },
   datasource: {
-    url: env("POSTGRES_PRISMA_URL"),
+    // Use a placeholder URL during build if the environment variable is not set
+    // This is safe because `prisma generate` doesn't actually connect to the database
+    url: process.env.POSTGRES_PRISMA_URL || "postgresql://placeholder:placeholder@placeholder:5432/placeholder",
   },
 });
