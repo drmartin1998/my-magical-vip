@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useState, useRef, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import ReCAPTCHA from "react-google-recaptcha";
 
 interface DayPark {
   date: string;
@@ -18,6 +19,7 @@ const DISNEY_PARKS = [
 
 export default function WaitingListPage(): ReactNode {
   const router = useRouter();
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -29,6 +31,7 @@ export default function WaitingListPage(): ReactNode {
     name: "",
     email: "",
     days: "",
+    recaptcha: "",
   });
   const [submitSuccess, setSubmitSuccess] = useState(false);
 
@@ -53,11 +56,11 @@ export default function WaitingListPage(): ReactNode {
     e.preventDefault();
     setIsSubmitting(true);
     setSubmitError("");
-    setFieldErrors({ name: "", email: "", days: "" });
+    setFieldErrors({ name: "", email: "", days: "", recaptcha: "" });
 
     // Validation
     let hasError = false;
-    const errors = { name: "", email: "", days: "" };
+    const errors = { name: "", email: "", days: "", recaptcha: "" };
 
     if (!formData.name.trim()) {
       errors.name = "Please enter your name";
@@ -72,6 +75,13 @@ export default function WaitingListPage(): ReactNode {
     const invalidDays = dayParks.filter((dp) => !dp.date || !dp.park);
     if (invalidDays.length > 0) {
       errors.days = "Please select both date and park for all days";
+      hasError = true;
+    }
+
+    // Get reCAPTCHA token
+    const recaptchaToken = recaptchaRef.current?.getValue();
+    if (!recaptchaToken) {
+      errors.recaptcha = "Please complete the reCAPTCHA verification";
       hasError = true;
     }
 
@@ -91,6 +101,7 @@ export default function WaitingListPage(): ReactNode {
           name: formData.name,
           email: formData.email,
           days: dayParks,
+          recaptchaToken,
         }),
       });
 
@@ -106,6 +117,7 @@ export default function WaitingListPage(): ReactNode {
     } catch (error) {
       console.error("Error submitting waiting list:", error);
       setSubmitError("Failed to submit. Please try again.");
+      recaptchaRef.current?.reset();
       setIsSubmitting(false);
     }
   };
@@ -292,6 +304,19 @@ export default function WaitingListPage(): ReactNode {
               {fieldErrors.days && (
                 <p className="mt-2 text-sm text-red-600" data-testid="days-error">
                   {fieldErrors.days}
+                </p>
+              )}
+            </div>
+
+            {/* reCAPTCHA */}
+            <div className="flex flex-col items-center">
+              <ReCAPTCHA
+                ref={recaptchaRef}
+                sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""}
+              />
+              {fieldErrors.recaptcha && (
+                <p className="mt-2 text-sm text-red-600" data-testid="recaptcha-error">
+                  {fieldErrors.recaptcha}
                 </p>
               )}
             </div>

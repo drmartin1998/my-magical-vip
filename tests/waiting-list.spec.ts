@@ -178,7 +178,40 @@ test.describe('Waiting List Page', () => {
     await expect(parkSelect).toHaveClass(/text-gray-900/);
   });
 
+  test('should display reCAPTCHA widget', async ({ page }) => {
+    // reCAPTCHA iframe should be present
+    const recaptchaFrame = page.frameLocator('iframe[title="reCAPTCHA"]');
+    await expect(recaptchaFrame.locator('body')).toBeVisible({ timeout: 10000 });
+  });
+
+  test('should show validation error when reCAPTCHA is not completed', async ({ page }) => {
+    // Fill out all other fields
+    await page.locator('input#name').fill('Jane Smith');
+    await page.locator('input#email').fill('jane@example.com');
+    await page.locator('input[type="date"]').first().fill('2025-12-30');
+    await page.locator('select').first().selectOption('magic-kingdom');
+    
+    // Try to submit without completing reCAPTCHA
+    await page.getByRole('button', { name: 'Join Waiting List' }).click();
+    
+    // Should show reCAPTCHA error
+    await expect(page.getByTestId('recaptcha-error')).toBeVisible();
+    await expect(page.getByTestId('recaptcha-error')).toHaveText('Please complete the reCAPTCHA verification');
+  });
+
   test('should show success message after valid form submission', async ({ page }) => {
+    // Mock reCAPTCHA to return a token
+    await page.addInitScript(() => {
+      // @ts-ignore
+      window.grecaptcha = {
+        ready: (cb: () => void) => cb(),
+        execute: () => Promise.resolve('mock-token'),
+        render: () => 'mock-widget-id',
+        reset: () => {},
+        getResponse: () => 'mock-recaptcha-token',
+      };
+    });
+
     // Mock the API call
     await page.route('**/api/waiting-list', async (route) => {
       await route.fulfill({
@@ -194,6 +227,15 @@ test.describe('Waiting List Page', () => {
     await page.locator('input[type="date"]').first().fill('2025-12-30');
     await page.locator('select').first().selectOption('magic-kingdom');
     
+    // Mock reCAPTCHA completion by directly calling the ref's getValue
+    await page.evaluate(() => {
+      const recaptchaElement = document.querySelector('[data-sitekey]');
+      if (recaptchaElement) {
+        // Simulate reCAPTCHA completion
+        (recaptchaElement as any).__recaptchaToken = 'mock-recaptcha-token';
+      }
+    });
+    
     // Submit the form
     await page.getByRole('button', { name: 'Join Waiting List' }).click();
     
@@ -203,6 +245,18 @@ test.describe('Waiting List Page', () => {
   });
 
   test('should show error message when API call fails', async ({ page }) => {
+    // Mock reCAPTCHA
+    await page.addInitScript(() => {
+      // @ts-ignore
+      window.grecaptcha = {
+        ready: (cb: () => void) => cb(),
+        execute: () => Promise.resolve('mock-token'),
+        render: () => 'mock-widget-id',
+        reset: () => {},
+        getResponse: () => 'mock-recaptcha-token',
+      };
+    });
+
     // Mock a failed API call
     await page.route('**/api/waiting-list', async (route) => {
       await route.fulfill({
@@ -218,6 +272,14 @@ test.describe('Waiting List Page', () => {
     await page.locator('input[type="date"]').first().fill('2025-12-30');
     await page.locator('select').first().selectOption('epcot');
     
+    // Mock reCAPTCHA completion
+    await page.evaluate(() => {
+      const recaptchaElement = document.querySelector('[data-sitekey]');
+      if (recaptchaElement) {
+        (recaptchaElement as any).__recaptchaToken = 'mock-recaptcha-token';
+      }
+    });
+    
     // Submit the form
     await page.getByRole('button', { name: 'Join Waiting List' }).click();
     
@@ -226,6 +288,18 @@ test.describe('Waiting List Page', () => {
   });
 
   test('should disable submit button while submitting', async ({ page }) => {
+    // Mock reCAPTCHA
+    await page.addInitScript(() => {
+      // @ts-ignore
+      window.grecaptcha = {
+        ready: (cb: () => void) => cb(),
+        execute: () => Promise.resolve('mock-token'),
+        render: () => 'mock-widget-id',
+        reset: () => {},
+        getResponse: () => 'mock-recaptcha-token',
+      };
+    });
+
     // Mock a slow API call
     await page.route('**/api/waiting-list', async (route) => {
       await new Promise(resolve => setTimeout(resolve, 1000));
@@ -242,6 +316,14 @@ test.describe('Waiting List Page', () => {
     await page.locator('input[type="date"]').first().fill('2025-12-28');
     await page.locator('select').first().selectOption('animal-kingdom');
     
+    // Mock reCAPTCHA completion
+    await page.evaluate(() => {
+      const recaptchaElement = document.querySelector('[data-sitekey]');
+      if (recaptchaElement) {
+        (recaptchaElement as any).__recaptchaToken = 'mock-recaptcha-token';
+      }
+    });
+    
     const submitButton = page.getByRole('button', { name: 'Join Waiting List' });
     await submitButton.click();
     
@@ -251,6 +333,18 @@ test.describe('Waiting List Page', () => {
   });
 
   test('should handle multiple days submission correctly', async ({ page }) => {
+    // Mock reCAPTCHA
+    await page.addInitScript(() => {
+      // @ts-ignore
+      window.grecaptcha = {
+        ready: (cb: () => void) => cb(),
+        execute: () => Promise.resolve('mock-token'),
+        render: () => 'mock-widget-id',
+        reset: () => {},
+        getResponse: () => 'mock-recaptcha-token',
+      };
+    });
+
     // Mock the API call
     let requestBody: any;
     await page.route('**/api/waiting-list', async (route) => {
@@ -279,6 +373,14 @@ test.describe('Waiting List Page', () => {
     await page.getByRole('button', { name: '+ Add Day' }).click();
     await page.locator('input[type="date"]').nth(2).fill('2025-12-27');
     await page.locator('select').nth(2).selectOption('hollywood-studios');
+    
+    // Mock reCAPTCHA completion
+    await page.evaluate(() => {
+      const recaptchaElement = document.querySelector('[data-sitekey]');
+      if (recaptchaElement) {
+        (recaptchaElement as any).__recaptchaToken = 'mock-recaptcha-token';
+      }
+    });
     
     // Submit
     await page.getByRole('button', { name: 'Join Waiting List' }).click();
