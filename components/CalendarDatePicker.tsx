@@ -18,10 +18,12 @@ export default function CalendarDatePicker({
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDates, setSelectedDates] = useState<Set<string>>(new Set());
   const [blackoutDates, setBlackoutDates] = useState<Set<string>>(new Set());
+  const [isLoadingBlackouts, setIsLoadingBlackouts] = useState(true);
 
   useEffect((): void => {
     const fetchBlackoutDates = async (): Promise<void> => {
       try {
+        setIsLoadingBlackouts(true);
         const response = await fetch("/api/blackout-dates");
         if (response.ok) {
           const data = (await response.json()) as { blackoutDates: string[] };
@@ -29,6 +31,8 @@ export default function CalendarDatePicker({
         }
       } catch (error) {
         console.error("Error fetching blackout dates:", error);
+      } finally {
+        setIsLoadingBlackouts(false);
       }
     };
 
@@ -220,42 +224,51 @@ export default function CalendarDatePicker({
         </div>
 
         <div className="grid grid-cols-7 gap-2">
-          {days.map((day, idx) => (
-            <div key={idx}>
-              {day === null ? (
-                <div className="h-8 w-8"></div>
-              ) : (
-                <button
-                  onClick={(): void => {
-                    if (isClickableDate(day)) {
-                      handleDateClick(day);
-                    }
-                  }}
-                  disabled={!isClickableDate(day) || (selectedDates.size >= numberOfDays && !isDateSelected(day))}
-                  className={`h-8 w-8 rounded text-sm font-medium transition-colors ${
-                    !isClickableDate(day)
-                      ? "text-gray-300 cursor-not-allowed bg-red-100"
-                      : isDateSelected(day)
-                      ? "bg-emerald-600 text-white"
-                      : selectedDates.size >= numberOfDays
-                      ? "text-gray-300 cursor-not-allowed"
-                      : "hover:bg-gray-100 text-gray-800"
-                  }`}
-                  title={
-                    !isClickableDate(day) && blackoutDates.has(getDateKey(new Date(
-                      currentMonth.getFullYear(),
-                      currentMonth.getMonth(),
-                      day
-                    )))
-                      ? "Blackout date"
-                      : undefined
-                  }
-                >
-                  {day}
-                </button>
-              )}
+          {isLoadingBlackouts ? (
+            <div className="col-span-7 flex items-center justify-center py-8">
+              <div className="flex flex-col items-center gap-2">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <p className="text-sm text-gray-600">Loading availability...</p>
+              </div>
             </div>
-          ))}
+          ) : (
+            days.map((day, idx) => (
+              <div key={idx}>
+                {day === null ? (
+                  <div className="h-8 w-8"></div>
+                ) : (
+                  <button
+                    onClick={(): void => {
+                      if (isClickableDate(day)) {
+                        handleDateClick(day);
+                      }
+                    }}
+                    disabled={!isClickableDate(day) || (selectedDates.size >= numberOfDays && !isDateSelected(day))}
+                    className={`h-8 w-8 rounded text-sm font-medium transition-colors ${
+                      !isClickableDate(day)
+                        ? "text-gray-300 cursor-not-allowed bg-red-100"
+                        : isDateSelected(day)
+                        ? "bg-emerald-600 text-white"
+                        : selectedDates.size >= numberOfDays
+                        ? "text-gray-300 cursor-not-allowed"
+                        : "hover:bg-gray-100 text-gray-800"
+                    }`}
+                    title={
+                      !isClickableDate(day) && blackoutDates.has(getDateKey(new Date(
+                        currentMonth.getFullYear(),
+                        currentMonth.getMonth(),
+                        day
+                      )))
+                        ? "Blackout date"
+                        : undefined
+                    }
+                  >
+                    {day}
+                  </button>
+                )}
+              </div>
+            ))
+          )}
         </div>
       </div>
 
