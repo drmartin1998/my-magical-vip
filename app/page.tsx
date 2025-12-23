@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { getProductsByCollection, getProducts } from "@/lib/shopify";
 import AddToCartButton from "@/components/AddToCartButton";
 import PackagesGrid from "@/components/PackagesGrid";
-import { Home as HomeIcon, Calendar, HelpCircle, Info } from "lucide-react";
+import GlobalNav from "@/components/GlobalNav";
 
 interface PackageOption {
   id: string;
@@ -153,40 +153,7 @@ const testimonials: Testimonial[] = [
 function HomePageClient({ packages }: { packages: PackageOption[] }) {
   return (
     <div className="min-h-screen bg-white">
-      {/* Navigation Bar */}
-      <nav className="w-full py-4 px-4 sm:px-6 lg:px-8 shadow-lg text-white" style={{ backgroundImage: 'url(/global-nav-bg.png)' }}>
-        <div className="flex items-center justify-between">
-          <a href="/" className="font-bold text-lg text-black hover:text-gray-700 transition-colors">
-            My Magical VIP
-          </a>
-          <ul className="flex gap-6 text-sm font-bold">
-            <li>
-              <a href="/" className="flex items-center gap-1.5 text-black hover:text-gray-700 transition-colors">
-                <HomeIcon size={16} />
-                Home
-              </a>
-            </li>
-            <li>
-              <a href="/typical-days" className="flex items-center gap-1.5 text-black hover:text-gray-700 transition-colors">
-                <Calendar size={16} />
-                Typical Days
-              </a>
-            </li>
-            <li>
-              <a href="#" className="flex items-center gap-1.5 text-black hover:text-gray-700 transition-colors">
-                <HelpCircle size={16} />
-                FAQ
-              </a>
-            </li>
-            <li>
-              <a href="#" className="flex items-center gap-1.5 text-black hover:text-gray-700 transition-colors">
-                <Info size={16} />
-                About
-              </a>
-            </li>
-          </ul>
-        </div>
-      </nav>
+      <GlobalNav />
 
       {/* Hero Section */}
       <section className="relative w-full py-20 px-4 sm:px-6 lg:px-8 bg-cover bg-center" style={{ backgroundImage: 'url(https://cdn.shopify.com/s/files/1/0643/1971/7626/files/2thomas-kelley-5YtjgRNTli4-unsplash.jpg?crop=center&width=3000)' }}>
@@ -328,7 +295,7 @@ function HomePageClient({ packages }: { packages: PackageOption[] }) {
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-emerald-300 transition-colors">
+                  <a href="/faq" className="hover:text-emerald-300 transition-colors">
                     FAQ
                   </a>
                 </li>

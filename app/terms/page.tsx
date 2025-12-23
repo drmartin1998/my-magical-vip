@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import GlobalNav from "@/components/GlobalNav";
 
 export const metadata: Metadata = {
   title: "Terms and Conditions | My Magical VIP",
@@ -9,36 +10,7 @@ export const metadata: Metadata = {
 export default function TermsPage() {
   return (
     <div className="min-h-screen bg-white">
-      {/* Navigation Bar */}
-      <nav className="w-full py-4 px-4 sm:px-6 lg:px-8 shadow-lg text-white" style={{ backgroundImage: 'url(/global-nav-bg.png)' }}>
-        <div className="flex items-center justify-between">
-          <a href="/" className="font-bold text-lg text-black hover:text-gray-700 transition-colors">
-            My Magical VIP
-          </a>
-          <ul className="flex gap-6 text-sm font-bold">
-            <li>
-              <a href="/" className="text-black hover:text-gray-700 transition-colors">
-                🏠 Home
-              </a>
-            </li>
-            <li>
-              <a href="/typical-days" className="text-black hover:text-gray-700 transition-colors">
-                📅 Typical Days
-              </a>
-            </li>
-            <li>
-              <a href="#" className="text-black hover:text-gray-700 transition-colors">
-                ❓ FAQ
-              </a>
-            </li>
-            <li>
-              <a href="#" className="text-black hover:text-gray-700 transition-colors">
-                ℹ️ About
-              </a>
-            </li>
-          </ul>
-        </div>
-      </nav>
+      <GlobalNav />
 
       {/* Hero Section */}
       <section className="relative w-full py-20 px-4 sm:px-6 lg:px-8 bg-cover bg-center" style={{ backgroundImage: 'url(https://cdn.shopify.com/s/files/1/0643/1971/7626/files/2thomas-kelley-5YtjgRNTli4-unsplash.jpg?crop=center&width=3000)' }}>
@@ -354,7 +326,7 @@ export default function TermsPage() {
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-amber-300 transition-colors">
+                  <a href="/faq" className="hover:text-amber-300 transition-colors">
                     FAQ
                   </a>
                 </li>
