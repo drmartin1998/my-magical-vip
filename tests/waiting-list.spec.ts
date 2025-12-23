@@ -10,12 +10,12 @@ test.describe('Waiting List Page', () => {
     await expect(page.getByText(/dates you selected are currently unavailable/i)).toBeVisible();
   });
 
-  test('should have logo in navigation that links to home', async ({ page }) => {
-    const logo = page.locator('img[alt="Key Logo"]');
-    await expect(logo).toBeVisible();
+  test('should have site name that links to home', async ({ page }) => {
+    const siteLink = page.locator('nav a:has-text("My Magical VIP")').first();
+    await expect(siteLink).toBeVisible();
     
-    // Click the logo link
-    await page.locator('a:has(img[alt="Key Logo"])').click();
+    // Click the site name link
+    await siteLink.click();
     await page.waitForURL('/');
     expect(page.url()).toContain('/');
   });

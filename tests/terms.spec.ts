@@ -9,9 +9,10 @@ test.describe('Terms and Conditions Page', () => {
     await expect(page.getByRole('heading', { name: 'Terms and Conditions' })).toBeVisible();
   });
 
-  test('should have key logo in navigation', async ({ page }) => {
-    const keyLogo = page.locator('img[alt="Key Logo"]').first();
-    await expect(keyLogo).toBeVisible();
+  test('should have site name in navigation', async ({ page }) => {
+    const siteLink = page.locator('nav a:has-text("My Magical VIP")').first();
+    await expect(siteLink).toBeVisible();
+    await expect(siteLink).toHaveAttribute('href', '/');
   });
 
   test('should display all major sections', async ({ page }) => {

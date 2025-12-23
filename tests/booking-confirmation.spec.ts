@@ -22,12 +22,10 @@ test.describe('Booking Confirmation Page', () => {
     await expect(page.getByText('Review your park selections and agree to our terms')).toBeVisible();
   });
 
-  test('should have logo in navigation that links to home', async ({ page }) => {
-    const logo = page.locator('img[alt="Key Logo"]');
-    await expect(logo).toBeVisible();
-    
-    const logoLink = page.locator('a:has(img[alt="Key Logo"])');
-    await expect(logoLink).toHaveAttribute('href', '/');
+  test('should have site name in navigation that links to home', async ({ page }) => {
+    const siteLink = page.locator('nav a:has-text("My Magical VIP")').first();
+    await expect(siteLink).toBeVisible();
+    await expect(siteLink).toHaveAttribute('href', '/');
   });
 
   test('should display breadcrumb navigation', async ({ page }) => {
@@ -156,10 +154,10 @@ test.describe('Booking Confirmation Page', () => {
   test('should display navigation bar with correct links', async ({ page }) => {
     const nav = page.locator('nav').first();
     
-    await expect(nav.getByRole('link', { name: /🏠 Home/i })).toHaveAttribute('href', '/');
-    await expect(nav.getByRole('link', { name: /📅 Typical Days/i })).toHaveAttribute('href', '/typical-days');
-    await expect(nav.getByRole('link', { name: /❓ FAQ/i })).toBeVisible();
-    await expect(nav.getByRole('link', { name: /ℹ️ About/i })).toBeVisible();
+    await expect(nav.getByRole('link', { name: /Home/i })).toHaveAttribute('href', '/');
+    await expect(nav.getByRole('link', { name: /Typical Days/i })).toHaveAttribute('href', '/typical-days');
+    await expect(nav.getByRole('link', { name: /FAQ/i })).toBeVisible();
+    await expect(nav.getByRole('link', { name: /About/i })).toBeVisible();
   });
 
   test('should display footer with company information', async ({ page }) => {

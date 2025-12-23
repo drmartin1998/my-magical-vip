@@ -213,6 +213,113 @@ export async function getProducts(first: number = 10): Promise<
   }));
 }
 
+/**
+ * Get products from a specific collection by handle
+ */
+export async function getProductsByCollection(collectionHandle: string, first: number = 10): Promise<
+  Array<{
+    id: string;
+    title: string;
+    handle: string;
+    description: string;
+    productType: string;
+    metafield?: { value: string } | null;
+    priceRange: {
+      minVariantPrice: {
+        amount: string;
+        currencyCode: string;
+      };
+    };
+    featuredImage: {
+      url: string;
+      altText: string;
+    };
+    variants: Array<{
+      id: string;
+    }>;
+  }>
+> {
+  const query = `
+    query ($handle: String!, $first: Int!) {
+      collection(handle: $handle) {
+        products(first: $first) {
+          edges {
+            node {
+              id
+              title
+              handle
+              description
+              productType
+              metafield(namespace: "my_fields", key: "day_limit") { value }
+              priceRange {
+                minVariantPrice {
+                  amount
+                  currencyCode
+                }
+              }
+              featuredImage {
+                url
+                altText
+              }
+              variants(first: 1) {
+                edges {
+                  node {
+                    id
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  `;
+
+  const result = await shopifyStorefrontFetch<{
+    collection: {
+      products: {
+        edges: Array<{
+          node: {
+            id: string;
+            title: string;
+            handle: string;
+            description: string;
+            productType: string;
+            metafield?: { value: string } | null;
+            priceRange: {
+              minVariantPrice: {
+                amount: string;
+                currencyCode: string;
+              };
+            };
+            featuredImage: {
+              url: string;
+              altText: string;
+            };
+            variants: {
+              edges: Array<{
+                node: {
+                  id: string;
+                };
+              }>;
+            };
+          };
+        }>;
+      };
+    } | null;
+  }>(query, { handle: collectionHandle, first });
+
+  if (!result.collection) {
+    throw new Error(`Collection with handle "${collectionHandle}" not found`);
+  }
+
+  return result.collection.products.edges.map((edge) => ({
+    ...edge.node,
+    variants: edge.node.variants.edges.map((v) => v.node),
+  }));
+}
+
+
 
 /**
  * Get a single product by handle

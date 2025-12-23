@@ -16,9 +16,9 @@ test.describe('Typical Days', () => {
     await expect(page.locator('nav a[href="/"]').first()).toBeVisible();
     await expect(page.locator('nav a[href="/typical-days"]')).toBeVisible();
 
-    // Check key logo
-    const logo = page.locator('nav img[alt="Key Logo"]');
-    await expect(logo).toBeVisible();
+    // Check site name
+    const siteLink = page.locator('nav a:has-text("My Magical VIP")').first();
+    await expect(siteLink).toBeVisible();
   });
 
   test('should display all four park sections', async ({ page }) => {

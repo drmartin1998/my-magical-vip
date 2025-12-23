@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState, type ReactNode } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
+import { Home, Calendar, HelpCircle, Info } from "lucide-react";
 
 interface DayParks {
   [dateKey: string]: string[];
@@ -45,8 +46,29 @@ function BookingConfirmationContent(): ReactNode {
       
       // Parse dates as local dates to avoid timezone issues
       const parsedDates = dates.map((d) => {
-        const [year, month, day] = d.split("-").map(Number);
-        return new Date(year, month - 1, day);
+        let year: number, month: number, day: number;
+        
+        // Handle both "YYYY-MM-DD" and ISO date string formats
+        if (d.includes("T")) {
+          // ISO format: "2026-01-23T06:00:00.000Z"
+          const isoDate = new Date(d);
+          year = isoDate.getFullYear();
+          month = isoDate.getMonth();
+          day = isoDate.getDate();
+        } else {
+          // Simple format: "YYYY-MM-DD"
+          [year, month, day] = d.split("-").map(Number);
+          month = month - 1; // Convert to 0-indexed
+        }
+        
+        const date = new Date(year, month, day);
+        
+        // Validate the date
+        if (isNaN(date.getTime())) {
+          throw new Error(`Invalid date: ${d}`);
+        }
+        
+        return date;
       });
       setSelectedDates(parsedDates);
       setDayParks(parks);
@@ -59,20 +81,34 @@ function BookingConfirmationContent(): ReactNode {
 
   const handleConfirm = async (): Promise<void> => {
     if (!agreedToTerms) {
-      alert("Please agree to the terms and conditions to continue");
+      al// Validate date
+        if (isNaN(date.getTime())) {
+          console.error("Invalid date object:", date);
+          return "";
+        }
+        
+        ert("Please agree to the terms and conditions to continue");
       return;
     }
 
     try {
+      // Format dates as YYYY-MM-DD strings for storage and API
+      const formatDateKey = (date: Date): string => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      };
+
       // Store all booking information
       sessionStorage.setItem("parkSelections", JSON.stringify(dayParks));
-      sessionStorage.setItem("selectedDates", JSON.stringify(selectedDates.map(d => d.toISOString())));
+      sessionStorage.setItem("selectedDates", JSON.stringify(selectedDates.map(formatDateKey)));
       sessionStorage.setItem("agreedToTerms", "true");
 
       // Format booking dates: date,park1,park2|date,park1,park2
       const bookingDatesString = selectedDates
         .map((date) => {
-          const dateKey = date.toISOString().split("T")[0];
+          const dateKey = formatDateKey(date);
           const parks = dayParks[dateKey] || [];
           return `${dateKey},${parks.join(",")}`;
         })
@@ -140,29 +176,32 @@ function BookingConfirmationContent(): ReactNode {
       {/* Navigation Bar */}
       <nav className="w-full py-4 px-4 sm:px-6 lg:px-8 shadow-lg text-white" style={{ backgroundImage: 'url(/global-nav-bg.png)' }}>
         <div className="flex items-center justify-between">
-          <a href="/" className="flex items-center gap-2 font-bold text-lg text-black hover:text-gray-700 transition-colors">
-            <Image src="/key-logo.png" alt="Key Logo" width={48} height={48} className="h-12 w-auto" />
+          <a href="/" className="font-bold text-lg text-black hover:text-gray-700 transition-colors">
             My Magical VIP
           </a>
           <ul className="flex gap-6 text-sm font-bold">
             <li>
-              <a href="/" className="text-black hover:text-gray-700 transition-colors">
-                🏠 Home
+              <a href="/" className="flex items-center gap-1.5 text-black hover:text-gray-700 transition-colors">
+                <Home size={16} />
+                Home
               </a>
             </li>
             <li>
-              <a href="/typical-days" className="text-black hover:text-gray-700 transition-colors">
-                📅 Typical Days
+              <a href="/typical-days" className="flex items-center gap-1.5 text-black hover:text-gray-700 transition-colors">
+                <Calendar size={16} />
+                Typical Days
               </a>
             </li>
             <li>
-              <a href="#" className="text-black hover:text-gray-700 transition-colors">
-                ❓ FAQ
+              <a href="#" className="flex items-center gap-1.5 text-black hover:text-gray-700 transition-colors">
+                <HelpCircle size={16} />
+                FAQ
               </a>
             </li>
             <li>
-              <a href="#" className="text-black hover:text-gray-700 transition-colors">
-                ℹ️ About
+              <a href="#" className="flex items-center gap-1.5 text-black hover:text-gray-700 transition-colors">
+                <Info size={16} />
+                About
               </a>
             </li>
           </ul>
@@ -208,8 +247,18 @@ function BookingConfirmationContent(): ReactNode {
             <h2 className="text-3xl font-bold text-blue-900 mb-6">Your Park Selections</h2>
             
             <div className="space-y-6">
-              {selectedDates.map((date) => {
-                const dateKey = date.toISOString().split("T")[0];
+              {selectedDates.map((date, index) => {
+                // Format date as YYYY-MM-DD to match dayParks keys
+                // Validate date
+                if (isNaN(date.getTime())) {
+                  console.error("Invalid date in render:", date);
+                  return null;
+                }
+                
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const dateKey = `${year}-${month}-${day}`;
                 const selectedParks = dayParks[dateKey] || [];
                 
                 return (

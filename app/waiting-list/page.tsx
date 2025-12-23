@@ -3,6 +3,7 @@
 import { useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { Home, Calendar, HelpCircle, Info } from "lucide-react";
 
 interface DayPark {
   date: string;
@@ -129,29 +130,32 @@ export default function WaitingListPage(): ReactNode {
       {/* Navigation Bar */}
       <nav className="w-full py-4 px-4 sm:px-6 lg:px-8 shadow-lg text-white" style={{ backgroundImage: 'url(/global-nav-bg.png)' }}>
         <div className="flex items-center justify-between">
-          <a href="/" className="flex items-center gap-2 font-bold text-lg text-black hover:text-gray-700 transition-colors">
-            <Image src="/key-logo.png" alt="Key Logo" width={48} height={48} className="h-12 w-auto" />
+          <a href="/" className="font-bold text-lg text-black hover:text-gray-700 transition-colors">
             My Magical VIP
           </a>
           <ul className="flex gap-6 text-sm font-bold">
             <li>
-              <a href="/" className="text-black hover:text-gray-700 transition-colors">
-                🏠 Home
+              <a href="/" className="flex items-center gap-1.5 text-black hover:text-gray-700 transition-colors">
+                <Home size={16} />
+                Home
               </a>
             </li>
             <li>
-              <a href="/typical-days" className="text-black hover:text-gray-700 transition-colors">
-                📅 Typical Days
+              <a href="/typical-days" className="flex items-center gap-1.5 text-black hover:text-gray-700 transition-colors">
+                <Calendar size={16} />
+                Typical Days
               </a>
             </li>
             <li>
-              <a href="#" className="text-black hover:text-gray-700 transition-colors">
-                ❓ FAQ
+              <a href="#" className="flex items-center gap-1.5 text-black hover:text-gray-700 transition-colors">
+                <HelpCircle size={16} />
+                FAQ
               </a>
             </li>
             <li>
-              <a href="#" className="text-black hover:text-gray-700 transition-colors">
-                ℹ️ About
+              <a href="#" className="flex items-center gap-1.5 text-black hover:text-gray-700 transition-colors">
+                <Info size={16} />
+                About
               </a>
             </li>
           </ul>
