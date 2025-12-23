@@ -81,19 +81,19 @@ function BookingConfirmationContent(): ReactNode {
 
   const handleConfirm = async (): Promise<void> => {
     if (!agreedToTerms) {
-      al// Validate date
-        if (isNaN(date.getTime())) {
-          console.error("Invalid date object:", date);
-          return "";
-        }
-        
-        ert("Please agree to the terms and conditions to continue");
+      alert("Please agree to the terms and conditions to continue");
       return;
     }
 
     try {
       // Format dates as YYYY-MM-DD strings for storage and API
       const formatDateKey = (date: Date): string => {
+        // Validate date
+        if (isNaN(date.getTime())) {
+          console.error("Invalid date object:", date);
+          return "";
+        }
+        
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');

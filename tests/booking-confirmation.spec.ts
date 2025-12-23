@@ -279,4 +279,74 @@ test.describe('Booking Confirmation Page', () => {
     await checkbox.click();
     await expect(checkbox).toBeChecked();
   });
+
+  test('should render without JavaScript errors', async ({ page }) => {
+    const errors: string[] = [];
+    
+    // Capture console errors
+    page.on('console', (msg) => {
+      if (msg.type() === 'error') {
+        errors.push(msg.text());
+      }
+    });
+
+    // Capture page errors
+    page.on('pageerror', (error) => {
+      errors.push(error.message);
+    });
+
+    await page.goto(`/booking-confirmation?dates=${datesParam}&parks=${parksParam}&packageId=${packageId}&productType=${encodeURIComponent(productType)}`);
+
+    // Wait for the page to load
+    await expect(page.getByText('Loading...')).not.toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Confirm Your Booking' })).toBeVisible();
+
+    // Check for syntax/build errors
+    const buildErrors = errors.filter(error => 
+      error.includes('SyntaxError') || 
+      error.includes('Unexpected token') ||
+      error.includes('Cannot find name') ||
+      error.includes('is not defined')
+    );
+
+    expect(buildErrors).toHaveLength(0);
+  });
+
+  test('should display dates without NaN values', async ({ page }) => {
+    await expect(page.getByText('Loading...')).not.toBeVisible();
+
+    // Check that dates display properly (no NaN-NaN-NaN in keys)
+    const dateSections = page.locator('.bg-gradient-to-br.from-blue-50.to-emerald-50');
+    await expect(dateSections).toHaveCount(3);
+
+    // Verify each section has a valid date heading
+    const firstHeading = dateSections.nth(0).locator('h3');
+    const firstHeadingText = await firstHeading.textContent();
+    
+    // Should not contain NaN
+    expect(firstHeadingText).not.toContain('NaN');
+    expect(firstHeadingText).toMatch(/December \d{1,2}, 2025/);
+  });
+
+  test('should handle date parsing for ISO format', async ({ page }) => {
+    const errors: string[] = [];
+    
+    page.on('console', (msg) => {
+      if (msg.type() === 'error') {
+        errors.push(msg.text());
+      }
+    });
+
+    // Test with ISO date format
+    const isoDates = ['2025-12-25T00:00:00.000Z', '2025-12-26T00:00:00.000Z', '2025-12-27T00:00:00.000Z'];
+    const isoDatesParam = encodeURIComponent(JSON.stringify(isoDates));
+    
+    await page.goto(`/booking-confirmation?dates=${isoDatesParam}&parks=${parksParam}&packageId=${packageId}&productType=${encodeURIComponent(productType)}`);
+    await expect(page.getByText('Loading...')).not.toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Your Park Selections' })).toBeVisible();
+
+    // No date parsing errors should occur
+    const dateErrors = errors.filter(error => error.includes('Invalid date'));
+    expect(dateErrors).toHaveLength(0);
+  });
 });
