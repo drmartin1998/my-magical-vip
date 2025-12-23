@@ -71,8 +71,8 @@ async function sendWaitingListEmail(
 
   try {
     await resend.emails.send({
-      from: "david@mymagicalvip.com",
-      to: "drmartin1998@gmail.com",
+      from: "info@mymagicalvip.com",
+      to: "info@mymagicalvip.com",
       subject: "My Magical VIP Waiting List Request",
       text: `New Waiting List Entry
 
