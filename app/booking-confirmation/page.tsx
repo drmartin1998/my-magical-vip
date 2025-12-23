@@ -43,7 +43,11 @@ function BookingConfirmationContent(): ReactNode {
       const dates = JSON.parse(decodeURIComponent(datesParam)) as string[];
       const parks = JSON.parse(decodeURIComponent(parksParam)) as DayParks;
       
-      const parsedDates = dates.map((d) => new Date(d));
+      // Parse dates as local dates to avoid timezone issues
+      const parsedDates = dates.map((d) => {
+        const [year, month, day] = d.split("-").map(Number);
+        return new Date(year, month - 1, day);
+      });
       setSelectedDates(parsedDates);
       setDayParks(parks);
       setIsLoading(false);
