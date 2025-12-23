@@ -205,7 +205,7 @@ function HomePageClient({ packages }: { packages: PackageOption[] }) {
             Available Packages
           </h2>
           <p className="text-center text-gray-600 mb-12">
-            Price includes up to 10 people per group. Park admission is required
+            Price includes up to 8 people per group. Park admission is required
             for day of visit.
           </p>
 
