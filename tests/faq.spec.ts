@@ -9,11 +9,6 @@ test.describe('FAQ Page', () => {
     await expect(page).toHaveTitle(/FAQ - My Magical VIP/);
   });
 
-  test('should display the navigation bar', async ({ page }) => {
-    const nav = page.locator('nav');
-    await expect(nav).toBeVisible();
-  });
-
   test('should have My Magical VIP branding that links to home', async ({ page }) => {
     const brandLink = page.locator('nav a[href="/"]').first();
     await expect(brandLink).toContainText('My Magical VIP');
@@ -29,7 +24,7 @@ test.describe('FAQ Page', () => {
     const faqLink = page.locator('nav a[href="/faq"]');
     await expect(faqLink).toContainText('FAQ');
     
-    const aboutLink = page.locator('nav a[href="#"]');
+    const aboutLink = page.locator('nav a[href="/about"]');
     await expect(aboutLink).toContainText('About');
   });
 

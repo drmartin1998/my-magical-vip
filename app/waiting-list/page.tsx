@@ -4,6 +4,7 @@ import { useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import GlobalNav from "@/components/GlobalNav";
+import GlobalFooter from "@/components/GlobalFooter";
 
 interface DayPark {
   date: string;
@@ -128,6 +129,21 @@ export default function WaitingListPage(): ReactNode {
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
       <GlobalNav />
+
+      {/* Breadcrumb Navigation */}
+      <nav className="bg-gray-50 py-3 px-4 sm:px-6 lg:px-8 border-b border-gray-200">
+        <div className="max-w-6xl mx-auto">
+          <ol className="flex items-center space-x-2 text-sm">
+            <li>
+              <a href="/" className="text-blue-600 hover:text-blue-700">
+                Home
+              </a>
+            </li>
+            <li className="text-gray-500">/</li>
+            <li className="text-gray-700 font-medium">Waiting List</li>
+          </ol>
+        </div>
+      </nav>
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-12 max-w-3xl">
@@ -313,6 +329,7 @@ export default function WaitingListPage(): ReactNode {
           </ul>
         </div>
       </div>
+      <GlobalFooter />
     </div>
   );
 }

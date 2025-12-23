@@ -27,7 +27,7 @@ export default function GlobalNav() {
             </a>
           </li>
           <li>
-            <a href="#" className="flex items-center gap-1.5 text-black hover:text-gray-700 transition-colors">
+            <a href="/about" className="flex items-center gap-1.5 text-black hover:text-gray-700 transition-colors">
               <Info size={16} />
               About
             </a>

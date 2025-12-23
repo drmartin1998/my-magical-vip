@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import GlobalNav from "@/components/GlobalNav";
+import GlobalFooter from "@/components/GlobalFooter";
 
 export const metadata: Metadata = {
   title: "FAQ - My Magical VIP",
@@ -88,6 +89,8 @@ export default function FAQPage() {
     <div className="min-h-screen bg-white">
       <GlobalNav />
 
+
+
       {/* Hero Section */}
       <section className="relative w-full py-20 px-4 sm:px-6 lg:px-8 bg-cover bg-center" style={{ backgroundImage: 'url(https://cdn.shopify.com/s/files/1/0643/1971/7626/files/2thomas-kelley-5YtjgRNTli4-unsplash.jpg?crop=center&width=3000)' }}>
         <div className="absolute inset-0 bg-gradient-to-r from-gray-900/40 via-gray-800/40 to-gray-900/40"></div>
@@ -100,7 +103,20 @@ export default function FAQPage() {
           </p>
         </div>
       </section>
-
+      {/* Breadcrumb Navigation */}
+      <nav className="bg-gray-50 py-3 px-4 sm:px-6 lg:px-8 border-b border-gray-200">
+        <div className="max-w-6xl mx-auto">
+          <ol className="flex items-center space-x-2 text-sm">
+            <li>
+              <a href="/" className="text-blue-600 hover:text-blue-700">
+                Home
+              </a>
+            </li>
+            <li className="text-gray-500">/</li>
+            <li className="text-gray-700 font-medium">FAQ</li>
+          </ol>
+        </div>
+      </nav>
       {/* FAQ Section */}
       <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="max-w-4xl mx-auto">
@@ -136,94 +152,7 @@ export default function FAQPage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-gradient-to-r from-blue-900 via-emerald-900 to-blue-900 text-white py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-            <div>
-              <h3 className="font-bold text-lg mb-4 text-amber-300">
-                My Magical VIP
-              </h3>
-              <ul className="space-y-2 text-sm text-gray-300">
-                <li>
-                  <a href="/" className="hover:text-amber-300 transition-colors">
-                    Home
-                  </a>
-                </li>
-                <li>
-                  <a href="/typical-days" className="hover:text-amber-300 transition-colors">
-                    Typical Days
-                  </a>
-                </li>
-                <li>
-                  <a href="/faq" className="hover:text-amber-300 transition-colors">
-                    FAQ
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-amber-300 transition-colors">
-                    About
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="font-bold text-lg mb-4 text-amber-300">Legal</h3>
-              <ul className="space-y-2 text-sm text-gray-300">
-                <li>
-                  <a href="/terms" className="hover:text-amber-300 transition-colors">
-                    Terms and Conditions
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="font-bold text-lg mb-4 text-amber-300">
-                Contact
-              </h3>
-              <ul className="space-y-2 text-sm text-gray-300">
-                <li>
-                  <a
-                    href="mailto:info@mymagicalvip.com"
-                    className="hover:text-amber-300 transition-colors"
-                  >
-                    info@mymagicalvip.com
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="font-bold text-lg mb-4 text-amber-300">
-                Follow Us
-              </h3>
-              <ul className="space-y-2 text-sm text-gray-300">
-                <li>
-                  <a
-                    href="https://www.facebook.com/My-Magical-VIP-102990822543949"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-amber-300 transition-colors"
-                  >
-                    Facebook
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="border-t border-emerald-700 pt-8 text-center text-sm text-gray-300">
-            <p className="mb-2">Copyright ©2025 My Magical VIP</p>
-            <p className="text-xs">
-              My Magical VIP is a private company in no way owned by or
-              affiliated with the Walt Disney Company, Universal, Comcast or any
-              of their parent or subsidiary institutions.
-            </p>
-          </div>
-        </div>
-      </footer>
+      <GlobalFooter />
     </div>
   );
 }
