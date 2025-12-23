@@ -222,13 +222,13 @@ function ParkSelectionContent(): ReactNode {
           <div className="mt-12 flex gap-4 justify-center">
             <button
               onClick={() => router.back()}
-              className="px-8 py-4 border-2 border-gray-300 rounded-lg text-gray-700 font-bold hover:bg-gray-50 transition-colors text-lg"
+              className="px-4 py-2 min-[600px]:px-8 min-[600px]:py-4 border-2 border-gray-300 rounded-lg text-gray-700 font-bold hover:bg-gray-50 transition-colors text-base min-[600px]:text-lg"
             >
               ← Back
             </button>
             <button
               onClick={handleConfirm}
-              className="px-12 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg transition-colors shadow-md text-lg"
+              className="px-6 py-2 min-[600px]:px-12 min-[600px]:py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg transition-colors shadow-md text-base min-[600px]:text-lg"
             >
               Confirm Parks →
             </button>
