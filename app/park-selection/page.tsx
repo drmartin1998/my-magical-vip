@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState, type ReactNode } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
+import { formatDateUTC } from '@/lib/dates';
 import GlobalNav from "@/components/GlobalNav";
 import GlobalFooter from "@/components/GlobalFooter";
 interface DayParks {
@@ -175,11 +176,9 @@ function ParkSelectionContent(): ReactNode {
                   className="bg-gradient-to-br from-blue-50 to-emerald-50 rounded-lg p-8 border-l-4 border-emerald-500 shadow-md"
                 >
                   <h2 className="text-3xl font-bold text-blue-900 mb-4">
-                    {date.toLocaleDateString("en-US", {
+                    {formatDateUTC(date, {
                       weekday: "long",
                       month: "long",
-                      day: "numeric",
-                      year: "numeric",
                     })}
                   </h2>
                   

@@ -1,4 +1,4 @@
-import { getBlackoutDates, getBlackoutDatesPaginated, type BlackoutDateFilters, type BlackoutDateSortOptions } from "@/lib/blackout";
+import { getBlackoutDates, getBlackoutDatesPaginated, createBlackoutDate, type BlackoutDateFilters, type BlackoutDateSortOptions } from "@/lib/blackout";
 import type { NextRequest } from "next/server";
 import { auth0 } from '@/lib/auth0';
 
@@ -61,6 +61,58 @@ export async function GET(request: NextRequest): Promise<Response> {
     console.error("Error fetching blackout dates:", error);
     return Response.json(
       { error: "Failed to fetch blackout dates" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest): Promise<Response> {
+  try {
+    // Check authentication
+    const session = await auth0.getSession(request);
+    
+    if (!session) {
+      return Response.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const body = await request.json();
+    const { date } = body;
+
+    if (!date) {
+      return Response.json(
+        { error: 'Date is required' },
+        { status: 400 }
+      );
+    }
+
+    // Validate date format
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!dateRegex.test(date)) {
+      return Response.json(
+        { error: 'Invalid date format. Expected YYYY-MM-DD' },
+        { status: 400 }
+      );
+    }
+
+    const blackoutDate = await createBlackoutDate(date);
+
+    return Response.json({ blackoutDate }, { status: 201 });
+  } catch (error) {
+    console.error("Error creating blackout date:", error);
+    
+    // Check for duplicate date error
+    if (error instanceof Error && error.message.includes('Unique constraint')) {
+      return Response.json(
+        { error: 'This date is already a blackout date' },
+        { status: 409 }
+      );
+    }
+    
+    return Response.json(
+      { error: "Failed to create blackout date" },
       { status: 500 }
     );
   }

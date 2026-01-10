@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { formatDateUTC } from '@/lib/dates';
 
 interface BlackoutDate {
   id: number;
@@ -24,6 +25,11 @@ export default function AdminBlackoutDatesPage() {
     totalPages: 0,
   });
   const [loading, setLoading] = useState(true);
+  const [creating, setCreating] = useState(false);
+  const [deleting, setDeleting] = useState<number | null>(null);
+  const [newDate, setNewDate] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   
   // Filter states
   const [dateFromFilter, setDateFromFilter] = useState('');
@@ -33,14 +39,13 @@ export default function AdminBlackoutDatesPage() {
   
   // Sort states
   const [sortField, setSortField] = useState<'date' | 'id'>('date');
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
 
-  // Fetch blackout dates when filters, sort, or pagination changes
-  useEffect(() => {
+  const refreshData = () => {
     setLoading(true);
     
     const params = new URLSearchParams({
@@ -65,6 +70,12 @@ export default function AdminBlackoutDatesPage() {
         console.error('Error fetching blackout dates:', err);
         setLoading(false);
       });
+  };
+
+  // Fetch blackout dates when filters, sort, or pagination changes
+  useEffect(() => {
+    refreshData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, pageSize, dateFromFilter, dateToFilter, yearFilter, monthFilter, sortField, sortDirection]);
 
   const handleSort = (field: 'date' | 'id') => {
@@ -82,6 +93,70 @@ export default function AdminBlackoutDatesPage() {
     setYearFilter('');
     setMonthFilter('');
     setCurrentPage(1);
+  };
+
+  const handleCreateBlackoutDate = async () => {
+    if (!newDate) {
+      setError('Please select a date');
+      return;
+    }
+
+    setCreating(true);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      const response = await fetch('/api/blackout-dates', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ date: newDate }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to create blackout date');
+      }
+
+      setSuccess('Blackout date created successfully');
+      setNewDate('');
+      refreshData();
+      
+      setTimeout(() => setSuccess(null), 3000);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to create blackout date');
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  const handleDeleteBlackoutDate = async (id: number) => {
+    if (!confirm('Are you sure you want to delete this blackout date?')) {
+      return;
+    }
+
+    setDeleting(id);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      const response = await fetch(`/api/blackout-dates/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to delete blackout date');
+      }
+
+      setSuccess('Blackout date deleted successfully');
+      refreshData();
+      
+      setTimeout(() => setSuccess(null), 3000);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to delete blackout date');
+    } finally {
+      setDeleting(null);
+    }
   };
 
   const SortIcon = ({ field }: { field: string }) => {
@@ -133,6 +208,39 @@ export default function AdminBlackoutDatesPage() {
         </div>
 
         <h2 className="text-3xl font-bold text-gray-900 mb-6">Blackout Dates</h2>
+
+        {error && (
+          <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+            {error}
+          </div>
+        )}
+        {success && (
+          <div className="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
+            {success}
+          </div>
+        )}
+
+        <div className="bg-white rounded-lg shadow p-6 mb-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Create New Blackout Date</h3>
+          <div className="flex gap-4 items-end">
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+              <input
+                type="date"
+                value={newDate}
+                onChange={(e) => setNewDate(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+            <button
+              onClick={handleCreateBlackoutDate}
+              disabled={creating || !newDate}
+              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {creating ? 'Creating...' : 'Create Blackout Date'}
+            </button>
+          </div>
+        </div>
 
         {/* Stats */}
         <div className="bg-white rounded-lg shadow p-6 mb-6">
@@ -279,18 +387,21 @@ export default function AdminBlackoutDatesPage() {
                 >
                   Date <SortIcon field="date" />
                 </th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {loading ? (
                 <tr>
-                  <td colSpan={2} className="px-6 py-4 text-center text-gray-500">
+                  <td colSpan={3} className="px-6 py-4 text-center text-gray-500">
                     Loading...
                   </td>
                 </tr>
               ) : data.blackoutDates.length === 0 ? (
                 <tr>
-                  <td colSpan={2} className="px-6 py-4 text-center text-gray-500">
+                  <td colSpan={3} className="px-6 py-4 text-center text-gray-500">
                     No blackout dates found
                   </td>
                 </tr>
@@ -301,11 +412,16 @@ export default function AdminBlackoutDatesPage() {
                       {blackoutDate.id}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {new Date(blackoutDate.date).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                      })}
+                      {formatDateUTC(blackoutDate.date, { month: 'long' })}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <button
+                        onClick={() => handleDeleteBlackoutDate(blackoutDate.id)}
+                        disabled={deleting === blackoutDate.id}
+                        className="text-red-600 hover:text-red-900 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {deleting === blackoutDate.id ? 'Deleting...' : 'Delete'}
+                      </button>
                     </td>
                   </tr>
                 ))

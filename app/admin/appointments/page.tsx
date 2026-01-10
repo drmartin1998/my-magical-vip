@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { formatDateUTC } from '@/lib/dates';
 
 interface Appointment {
   id: number;
@@ -137,11 +138,11 @@ export default function AdminAppointmentsPage() {
           </a>
         </div>
 
-        <h2 className="text-3xl font-bold text-gray-900 mb-6">Appointments</h2>
+        <h2 className="text-3xl font-bold text-gray-900 mb-6">Bookings</h2>
 
         {/* Stats */}
         <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <div className="text-sm text-gray-600">Total Appointments</div>
+          <div className="text-sm text-gray-600">Total Bookings</div>
           <div className="text-3xl font-bold text-gray-900">{data.total}</div>
         </div>
 
@@ -323,7 +324,7 @@ export default function AdminAppointmentsPage() {
                 ) : data.appointments.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="px-6 py-4 text-center text-gray-500">
-                      No appointments found
+                      No bookings found
                     </td>
                   </tr>
                 ) : (
@@ -333,11 +334,7 @@ export default function AdminAppointmentsPage() {
                         {appointment.id}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {new Date(appointment.date).toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric'
-                        })}
+                        {formatDateUTC(appointment.date)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         {appointment.park}

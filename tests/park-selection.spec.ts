@@ -54,9 +54,10 @@ test.describe('Park Selection Page', () => {
   });
 
   test('should display correct date format for each day', async ({ page }) => {
-    // Check that dates are displayed in "Friday, December 25, 2025" format
-    const firstDate = new Date('2025-12-25');
+    // Check that dates are displayed in "Friday, December 25" format (using UTC timezone)
+    const firstDate = new Date('2025-12-25T00:00:00Z');
     const expectedFormat = firstDate.toLocaleDateString("en-US", {
+      timeZone: 'UTC',
       weekday: "long",
       month: "long",
       day: "numeric",

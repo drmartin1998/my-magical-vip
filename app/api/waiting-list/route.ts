@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { Resend } from "resend";
 import { auth0 } from '@/lib/auth0';
+import { formatDateUTC } from '@/lib/dates';
 
 interface DayPark {
   date: string;
@@ -55,12 +56,9 @@ async function sendWaitingListEmail(
   // Format the days/parks for the email
   const daysFormatted = days
     .map((dayPark) => {
-      const date = new Date(dayPark.date);
-      const formattedDate = date.toLocaleDateString("en-US", {
+      const formattedDate = formatDateUTC(dayPark.date, {
         weekday: "long",
-        year: "numeric",
         month: "long",
-        day: "numeric",
       });
       return `${formattedDate} - ${dayPark.park
         .split("-")
@@ -94,12 +92,9 @@ ${daysFormatted}`,
         <ul style="list-style: none; padding: 0;">
           ${days
             .map((dayPark) => {
-              const date = new Date(dayPark.date);
-              const formattedDate = date.toLocaleDateString("en-US", {
+              const formattedDate = formatDateUTC(dayPark.date, {
                 weekday: "long",
-                year: "numeric",
                 month: "long",
-                day: "numeric",
               });
               const parkName = dayPark.park
                 .split("-")

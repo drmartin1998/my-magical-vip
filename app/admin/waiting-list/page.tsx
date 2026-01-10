@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { formatDateUTC } from '@/lib/dates';
 import Image from 'next/image';
 
 interface WaitingListEntry {
@@ -136,12 +137,7 @@ export default function AdminWaitingListPage() {
                           {entry.email || 'N/A'}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {new Date(entry.date).toLocaleDateString('en-US', {
-                            weekday: 'short',
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric',
-                          })}
+                          {formatDateUTC(entry.date, { weekday: 'short' })}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                           {entry.park

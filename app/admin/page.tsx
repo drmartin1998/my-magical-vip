@@ -9,7 +9,6 @@ export default async function AdminPage() {
       <nav className="w-full py-4 px-4 sm:px-6 lg:px-8 shadow-lg text-white" style={{ backgroundImage: 'url(/global-nav-bg.png)' }}>
         <div className="flex items-center justify-between">
           <a href="/" className="flex items-center gap-2 font-bold text-lg text-black hover:text-gray-700 transition-colors">
-            <Image src="/key-logo.png" alt="Key Logo" width={48} height={48} className="h-12 w-auto" />
             My Magical VIP - Admin
           </a>
           <div className="flex items-center gap-4">
@@ -61,7 +60,7 @@ export default async function AdminPage() {
               <p className="text-gray-600">Manage unavailable dates</p>
             </a>
 
-            {/* Appointments Card */}
+            {/* Bookings Card */}
             <a
               href="/admin/appointments"
               className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow"
@@ -72,9 +71,9 @@ export default async function AdminPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                 </div>
-                <h2 className="text-xl font-semibold text-gray-900">Appointments</h2>
+                <h2 className="text-xl font-semibold text-gray-900">Bookings</h2>
               </div>
-              <p className="text-gray-600">View all scheduled appointments</p>
+              <p className="text-gray-600">View all scheduled bookings</p>
             </a>
           </div>
         </div>

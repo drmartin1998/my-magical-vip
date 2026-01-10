@@ -37,7 +37,7 @@ export async function getBlackoutDates(): Promise<Date[]> {
   }
 }
 
-export async function createBlackoutDate(date: string): Promise<boolean> {
+export async function createBlackoutDate(date: string) {
   try {
     const existingBlackout = await prisma.blackoutdate.findFirst({
       where: {
@@ -47,17 +47,17 @@ export async function createBlackoutDate(date: string): Promise<boolean> {
 
     if (existingBlackout) {
       console.log(`Blackout date already exists for ${date}`);
-      return true;
+      return existingBlackout;
     }
 
-    await prisma.blackoutdate.create({
+    const blackoutDate = await prisma.blackoutdate.create({
       data: {
         date: new Date(date),
       },
     });
 
     console.log(`Created blackout date for ${date}`);
-    return true;
+    return blackoutDate;
   } catch (error) {
     console.error("Error creating blackout date:", error);
     throw error;
@@ -102,7 +102,7 @@ export async function getBlackoutDatesPaginated(
     if (sort) {
       orderBy[sort.field] = sort.direction;
     } else {
-      orderBy.date = "asc";
+      orderBy.date = "desc";
     }
 
     // Get total count for pagination
@@ -138,13 +138,12 @@ export async function getBlackoutDatesPaginated(
   }
 }
 
-export async function deleteBlackoutDate(id: number): Promise<boolean> {
+export async function deleteBlackoutDate(id: number): Promise<void> {
   try {
     await prisma.blackoutdate.delete({
       where: { id },
     });
     console.log(`Deleted blackout date with id ${id}`);
-    return true;
   } catch (error) {
     console.error("Error deleting blackout date:", error);
     throw error;
