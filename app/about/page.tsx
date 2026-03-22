@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import GlobalNav from "@/components/GlobalNav";
 import GlobalFooter from "@/components/GlobalFooter";
 
@@ -33,9 +34,9 @@ export default function AboutPage() {
         <div className="max-w-6xl mx-auto">
           <ol className="flex items-center space-x-2 text-sm">
             <li>
-              <a href="/" className="text-blue-600 hover:text-blue-700">
+              <Link href="/" className="text-blue-600 hover:text-blue-700">
                 Home
-              </a>
+              </Link>
             </li>
             <li className="text-gray-500">/</li>
             <li className="text-gray-700 font-medium">About</li>
@@ -89,7 +90,7 @@ export default function AboutPage() {
                   2
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold text-blue-900 mb-2">What's Included</h3>
+                  <h3 className="text-xl font-semibold text-blue-900 mb-2">What&apos;s Included</h3>
                   <p className="leading-relaxed">
                     Our virtual tour guides are available from park open to park close. We will manage your Lightning Lane reservations and provide touring strategies throughout your day.
                   </p>
@@ -101,9 +102,9 @@ export default function AboutPage() {
                   3
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold text-blue-900 mb-2">What's Not Included</h3>
+                  <h3 className="text-xl font-semibold text-blue-900 mb-2">What&apos;s Not Included</h3>
                   <p className="leading-relaxed">
-                    Tickets to the parks are not included in the price nor is Disney's Lightning Lane Multi Pass or Single Pass. If you need tickets to the parks we will work with you to help you purchase park tickets and/or Disney's Lightning Lane passes.
+                    Tickets to the parks are not included in the price nor is Disney&apos;s Lightning Lane Multi Pass or Single Pass. If you need tickets to the parks we will work with you to help you purchase park tickets and/or Disney&apos;s Lightning Lane passes.
                   </p>
                 </div>
               </div>
@@ -116,7 +117,7 @@ export default function AboutPage() {
               Our Expertise
             </h2>
             <p className="text-lg text-gray-700 leading-relaxed mb-4">
-              We do not have access to "back door" anyone onto attractions nor does any other third party tour group. However, with experience touring the parks, our techniques and strategies can feel like we are "cutting the line", even though we are not! Our tour guides will be the operators of your Disney Lightning Lane accounts which allows one to book Lightning Lane reservations for attractions that lets individuals enter through a separate line at a reduced wait time. Disney Lightning Lane is available to the general public but we have found the secrets to maximizing the system.
+                We do not have access to &quot;back door&quot; anyone onto attractions nor does any other third party tour group. However, with experience touring the parks, our techniques and strategies can feel like we are &quot;cutting the line&quot;, even though we are not! Our tour guides will be the operators of your Disney Lightning Lane accounts which allows one to book Lightning Lane reservations for attractions that lets individuals enter through a separate line at a reduced wait time. Disney Lightning Lane is available to the general public but we have found the secrets to maximizing the system.
             </p>
           </div>
 
@@ -126,7 +127,7 @@ export default function AboutPage() {
               About Disney Lightning Lane
             </h2>
             <p className="text-lg text-gray-700 leading-relaxed">
-              Disney's Lightning Lane is a paid service. This service allows you to "book" attraction reservations, one at a time while you are in the Walt Disney World parks. These reservations allow you to enter that attraction through the "Lightning Lane" entrance which features a much shorter wait when compared to the standby queue. We require all our guests to purchase this service with their park tickets as this helps our guides get you on as many attractions as possible with shorter waits.
+              Disney&apos;s Lightning Lane is a paid service. This service allows you to &quot;book&quot; attraction reservations, one at a time while you are in the Walt Disney World parks. These reservations allow you to enter that attraction through the &quot;Lightning Lane&quot; entrance which features a much shorter wait when compared to the standby queue. We require all our guests to purchase this service with their park tickets as this helps our guides get you on as many attractions as possible with shorter waits.
             </p>
           </div>
 
@@ -136,12 +137,12 @@ export default function AboutPage() {
             <p className="mb-6">
               Let us handle the planning while you make the memories.
             </p>
-            <a
+            <Link
               href="/"
               className="inline-block bg-white text-blue-600 font-bold px-8 py-3 rounded-lg hover:bg-gray-100 transition-colors"
             >
               View Our Packages
-            </a>
+            </Link>
           </div>
         </div>
       </section>

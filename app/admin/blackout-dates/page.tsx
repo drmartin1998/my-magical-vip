@@ -1,5 +1,6 @@
 'use client';
 
+import Link from "next/link";
 import { useState, useEffect } from 'react';
 import { formatDateUTC } from '@/lib/dates';
 
@@ -202,9 +203,9 @@ export default function AdminBlackoutDatesPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb */}
         <div className="mb-6">
-          <a href="/admin" className="text-blue-600 hover:text-blue-800">
+          <Link href="/admin" className="text-blue-600 hover:text-blue-800">
             ← Back to Dashboard
-          </a>
+          </Link>
         </div>
 
         <h2 className="text-3xl font-bold text-gray-900 mb-6">Blackout Dates</h2>

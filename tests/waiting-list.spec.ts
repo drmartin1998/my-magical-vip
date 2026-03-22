@@ -53,7 +53,7 @@ test.describe('Waiting List Page', () => {
 
   test('should allow adding and removing days', async ({ page }) => {
     // Initially should have 1 day
-    let dateInputs = page.locator('input[type="date"]');
+    const dateInputs = page.locator('input[type="date"]');
     expect(await dateInputs.count()).toBe(1);
     
     // Add a day
@@ -264,7 +264,7 @@ test.describe('Waiting List Page', () => {
 
   test('should handle multiple days submission correctly', async ({ page }) => {
     // Mock the API call - explicitly handle POST
-    let requestBody: any;
+    let requestBody: { days: unknown[]; name: string; email: string } | undefined;
     await page.route('**/api/waiting-list', async (route) => {
       if (route.request().method() === 'POST') {
         requestBody = route.request().postDataJSON();
@@ -303,8 +303,9 @@ test.describe('Waiting List Page', () => {
     await expect(page.getByText('Thank You!')).toBeVisible();
     
     // Verify the request had all 3 days
-    expect(requestBody.days).toHaveLength(3);
-    expect(requestBody.name).toBe('Multi Day User');
-    expect(requestBody.email).toBe('multiday@example.com');
+    expect(requestBody).toBeDefined();
+    expect(requestBody?.days).toHaveLength(3);
+    expect(requestBody?.name).toBe('Multi Day User');
+    expect(requestBody?.email).toBe('multiday@example.com');
   });
 });

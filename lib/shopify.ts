@@ -6,14 +6,44 @@ const STOREFRONT_ACCESS_TOKEN = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
 const ADMIN_API_ACCESS_TOKEN = process.env.SHOPIFY_ADMIN_API_ACCESS_TOKEN;
 const STORE_DOMAIN = process.env.SHOPIFY_STORE_DOMAIN;
 
-if (!STOREFRONT_ACCESS_TOKEN || !STORE_DOMAIN) {
-  throw new Error(
-    "Missing required Shopify environment variables. Set SHOPIFY_STOREFRONT_ACCESS_TOKEN and SHOPIFY_STORE_DOMAIN in Vercel project settings."
-  );
+const STOREFRONT_API_ENDPOINT = STORE_DOMAIN
+  ? `https://${STORE_DOMAIN}/api/2024-10/graphql.json`
+  : null;
+const ADMIN_API_ENDPOINT = STORE_DOMAIN
+  ? `https://${STORE_DOMAIN}/admin/api/2024-10/graphql.json`
+  : null;
+
+function getStorefrontConfig(): {
+  endpoint: string;
+  accessToken: string;
+} {
+  if (!STOREFRONT_ACCESS_TOKEN || !STOREFRONT_API_ENDPOINT) {
+    throw new Error(
+      "Missing required Shopify environment variables. Set SHOPIFY_STOREFRONT_ACCESS_TOKEN and SHOPIFY_STORE_DOMAIN in Vercel project settings."
+    );
+  }
+
+  return {
+    endpoint: STOREFRONT_API_ENDPOINT,
+    accessToken: STOREFRONT_ACCESS_TOKEN,
+  };
 }
 
-const STOREFRONT_API_ENDPOINT = `https://${STORE_DOMAIN}/api/2024-10/graphql.json`;
-const ADMIN_API_ENDPOINT = `https://${STORE_DOMAIN}/admin/api/2024-10/graphql.json`;
+function getAdminConfig(): {
+  endpoint: string;
+  accessToken: string;
+} {
+  if (!ADMIN_API_ACCESS_TOKEN || !ADMIN_API_ENDPOINT) {
+    throw new Error(
+      "Missing required Shopify environment variables. Set SHOPIFY_ADMIN_API_ACCESS_TOKEN and SHOPIFY_STORE_DOMAIN in Vercel project settings."
+    );
+  }
+
+  return {
+    endpoint: ADMIN_API_ENDPOINT,
+    accessToken: ADMIN_API_ACCESS_TOKEN,
+  };
+}
 
 /**
  * Make a request to Shopify Storefront API
@@ -22,15 +52,13 @@ export async function shopifyStorefrontFetch<T>(
   query: string,
   variables?: Record<string, unknown>
 ): Promise<T> {
-  if (!STOREFRONT_ACCESS_TOKEN) {
-    throw new Error("Missing SHOPIFY_STOREFRONT_ACCESS_TOKEN");
-  }
+  const { endpoint, accessToken } = getStorefrontConfig();
 
-  const response = await fetch(STOREFRONT_API_ENDPOINT, {
+  const response = await fetch(endpoint, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "X-Shopify-Storefront-Access-Token": STOREFRONT_ACCESS_TOKEN,
+      "X-Shopify-Storefront-Access-Token": accessToken,
     },
     body: JSON.stringify({
       query,
@@ -58,15 +86,13 @@ export async function shopifyAdminFetch<T>(
   query: string,
   variables?: Record<string, unknown>
 ): Promise<T> {
-  if (!ADMIN_API_ACCESS_TOKEN) {
-    throw new Error("Missing SHOPIFY_ADMIN_API_ACCESS_TOKEN");
-  }
+  const { endpoint, accessToken } = getAdminConfig();
 
-  const response = await fetch(ADMIN_API_ENDPOINT, {
+  const response = await fetch(endpoint, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "X-Shopify-Access-Token": ADMIN_API_ACCESS_TOKEN,
+      "X-Shopify-Access-Token": accessToken,
     },
     body: JSON.stringify({
       query,

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -135,9 +136,9 @@ export default function WaitingListPage(): ReactNode {
         <div className="max-w-6xl mx-auto">
           <ol className="flex items-center space-x-2 text-sm">
             <li>
-              <a href="/" className="text-blue-600 hover:text-blue-700">
+              <Link href="/" className="text-blue-600 hover:text-blue-700">
                 Home
-              </a>
+              </Link>
             </li>
             <li className="text-gray-500">/</li>
             <li className="text-gray-700 font-medium">Waiting List</li>

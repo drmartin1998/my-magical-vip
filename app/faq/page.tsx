@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import GlobalNav from "@/components/GlobalNav";
 import GlobalFooter from "@/components/GlobalFooter";
 
@@ -108,9 +109,9 @@ export default function FAQPage() {
         <div className="max-w-6xl mx-auto">
           <ol className="flex items-center space-x-2 text-sm">
             <li>
-              <a href="/" className="text-blue-600 hover:text-blue-700">
+              <Link href="/" className="text-blue-600 hover:text-blue-700">
                 Home
-              </a>
+              </Link>
             </li>
             <li className="text-gray-500">/</li>
             <li className="text-gray-700 font-medium">FAQ</li>
@@ -140,7 +141,7 @@ export default function FAQPage() {
           <div className="mt-12 text-center bg-gradient-to-r from-blue-600 to-emerald-600 rounded-lg p-8 text-white">
             <h2 className="text-2xl font-bold mb-4">Still Have Questions?</h2>
             <p className="mb-6">
-              We're here to help! Reach out to us and we'll be happy to answer any questions you have.
+              We&apos;re here to help! Reach out to us and we&apos;ll be happy to answer any questions you have.
             </p>
             <a
               href="mailto:info@mymagicalvip.com"

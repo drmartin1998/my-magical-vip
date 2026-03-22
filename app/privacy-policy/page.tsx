@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import GlobalNav from "@/components/GlobalNav";
 import GlobalFooter from "@/components/GlobalFooter";
 
@@ -17,9 +18,9 @@ export default function PrivacyPolicyPage() {
         <div className="max-w-6xl mx-auto">
           <ol className="flex items-center space-x-2 text-sm">
             <li>
-              <a href="/" className="text-blue-600 hover:text-blue-700">
+              <Link href="/" className="text-blue-600 hover:text-blue-700">
                 Home
-              </a>
+              </Link>
             </li>
             <li className="text-gray-500">/</li>
             <li className="text-gray-700 font-medium">Privacy Policy</li>

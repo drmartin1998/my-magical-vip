@@ -1,6 +1,7 @@
 "use client";
 
-import { Suspense, useEffect, useState, type ReactNode } from "react";
+import { Suspense, useEffect, useMemo, useState, type ReactNode } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { formatDateUTC } from '@/lib/dates';
@@ -10,6 +11,14 @@ interface DayParks {
   [dateKey: string]: string[];
 }
 
+interface ParkSelectionData {
+  key: string;
+  selectedDates: Date[];
+  initialDayParks: DayParks;
+  packageId: string;
+  productType: string;
+}
+
 const DISNEY_PARKS = [
   { id: "magic-kingdom", name: "Magic Kingdom" },
   { id: "epcot", name: "EPCOT" },
@@ -17,46 +26,20 @@ const DISNEY_PARKS = [
   { id: "animal-kingdom", name: "Animal Kingdom" },
 ];
 
-function ParkSelectionContent(): ReactNode {
+function buildInitialDayParks(dates: Date[]): DayParks {
+  const initial: DayParks = {};
+
+  dates.forEach((date) => {
+    initial[date.toISOString().split("T")[0]] = [];
+  });
+
+  return initial;
+}
+
+function ParkSelectionForm({ selection }: { selection: ParkSelectionData }): ReactNode {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const [selectedDates, setSelectedDates] = useState<Date[]>([]);
-  const [dayParks, setDayParks] = useState<DayParks>({});
-  const [packageId, setPackageId] = useState<string>("");
-  const [productType, setProductType] = useState<string>("");
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    // Parse dates from URL
-    const datesParam = searchParams.get("dates");
-    const pkgId = searchParams.get("packageId");
-    const prodType = searchParams.get("productType");
-    
-    if (!datesParam || !pkgId) {
-      router.push("/");
-      return;
-    }
-
-    setPackageId(pkgId);
-    setProductType(prodType || "");
-    
-    try {
-      const dates = JSON.parse(decodeURIComponent(datesParam)) as string[];
-      const parsedDates = dates.map((d) => new Date(d));
-      setSelectedDates(parsedDates);
-      
-      // Initialize empty selections for each day
-      const initial: DayParks = {};
-      parsedDates.forEach((date) => {
-        initial[date.toISOString().split("T")[0]] = [];
-      });
-      setDayParks(initial);
-      setIsLoading(false);
-    } catch (error) {
-      console.error("Error parsing dates:", error);
-      router.push("/");
-    }
-  }, [searchParams, router]);
+  const { selectedDates, initialDayParks, packageId, productType } = selection;
+  const [dayParks, setDayParks] = useState<DayParks>(() => initialDayParks);
 
   const togglePark = (dateKey: string, parkId: string): void => {
     setDayParks((prev) => {
@@ -98,14 +81,6 @@ function ParkSelectionContent(): ReactNode {
     router.push(`/booking-confirmation?dates=${datesParam}&parks=${parksParam}&packageId=${packageId}&productType=${encodeURIComponent(productType)}`);
   };
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <p className="text-gray-600">Loading...</p>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-white">
       <GlobalNav />
@@ -125,9 +100,9 @@ function ParkSelectionContent(): ReactNode {
         <div className="max-w-6xl mx-auto">
           <ol className="flex items-center space-x-2 text-sm">
             <li>
-              <a href="/" className="text-blue-600 hover:text-blue-700">
+              <Link href="/" className="text-blue-600 hover:text-blue-700">
                 Home
-              </a>
+              </Link>
             </li>
             <li className="text-gray-500">/</li>
             <li className="text-gray-700 font-medium">Park Selection</li>
@@ -238,6 +213,67 @@ function ParkSelectionContent(): ReactNode {
       <GlobalFooter />
     </div>
   );
+}
+
+function ParkSelectionContent(): ReactNode {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [isBootstrapping, setIsBootstrapping] = useState(true);
+  const selection = useMemo<ParkSelectionData | null>(() => {
+    const datesParam = searchParams.get("dates");
+    const packageId = searchParams.get("packageId");
+    const productType = searchParams.get("productType") || "";
+
+    if (!datesParam || !packageId) {
+      return null;
+    }
+
+    try {
+      const dates = JSON.parse(decodeURIComponent(datesParam)) as string[];
+      const parsedDates = dates.map((date) => new Date(date));
+
+      if (parsedDates.some((date) => Number.isNaN(date.getTime()))) {
+        return null;
+      }
+
+      return {
+        key: `${datesParam}|${packageId}|${productType}`,
+        selectedDates: parsedDates,
+        initialDayParks: buildInitialDayParks(parsedDates),
+        packageId,
+        productType,
+      };
+    } catch (error) {
+      console.error("Error parsing dates:", error);
+      return null;
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setIsBootstrapping(false);
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!selection) {
+      router.push("/");
+    }
+  }, [selection, router]);
+
+  if (isBootstrapping || !selection) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <p className="text-gray-600">Loading...</p>
+      </div>
+    );
+  }
+
+  return <ParkSelectionForm key={selection.key} selection={selection} />;
 }
 
 export default function ParkSelectionPage(): ReactNode {

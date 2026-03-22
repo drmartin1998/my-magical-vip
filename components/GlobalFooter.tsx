@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function GlobalFooter() {
   return (
     <footer className="bg-gradient-to-r from-blue-900 via-emerald-900 to-blue-900 text-white py-12 px-4 sm:px-6 lg:px-8">
@@ -9,24 +11,24 @@ export default function GlobalFooter() {
             </h3>
             <ul className="space-y-2 text-sm text-gray-300">
               <li>
-                <a href="/" className="hover:text-amber-300 transition-colors">
+                <Link href="/" className="hover:text-amber-300 transition-colors">
                   Home
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/typical-days" className="hover:text-amber-300 transition-colors">
+                <Link href="/typical-days" className="hover:text-amber-300 transition-colors">
                   Typical Days
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/faq" className="hover:text-amber-300 transition-colors">
+                <Link href="/faq" className="hover:text-amber-300 transition-colors">
                   FAQ
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/about" className="hover:text-amber-300 transition-colors">
+                <Link href="/about" className="hover:text-amber-300 transition-colors">
                   About
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -35,19 +37,19 @@ export default function GlobalFooter() {
             <h3 className="font-bold text-lg mb-4 text-amber-300">Legal</h3>
             <ul className="space-y-2 text-sm text-gray-300">
               <li>
-                <a href="/terms" className="hover:text-amber-300 transition-colors">
+                <Link href="/terms" className="hover:text-amber-300 transition-colors">
                   Terms and Conditions
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/privacy-policy" className="hover:text-amber-300 transition-colors">
+                <Link href="/privacy-policy" className="hover:text-amber-300 transition-colors">
                   Privacy Policy
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/cancellation-policy" className="hover:text-amber-300 transition-colors">
+                <Link href="/cancellation-policy" className="hover:text-amber-300 transition-colors">
                   Cancellation Policy
-                </a>
+                </Link>
               </li>
             </ul>
           </div>

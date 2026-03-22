@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from "next/link";
 
 export default async function AdminPage() {
   // Auth is handled by middleware.ts
@@ -8,9 +9,9 @@ export default async function AdminPage() {
       {/* Navigation Bar */}
       <nav className="w-full py-4 px-4 sm:px-6 lg:px-8 shadow-lg text-white" style={{ backgroundImage: 'url(/global-nav-bg.png)' }}>
         <div className="flex items-center justify-between">
-          <a href="/" className="flex items-center gap-2 font-bold text-lg text-black hover:text-gray-700 transition-colors">
+          <Link href="/" className="flex items-center gap-2 font-bold text-lg text-black hover:text-gray-700 transition-colors">
             My Magical VIP - Admin
-          </a>
+          </Link>
           <div className="flex items-center gap-4">
             <a
               href="/api/auth/logout"
@@ -29,7 +30,7 @@ export default async function AdminPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Waiting List Card */}
-            <a
+            <Link
               href="/admin/waiting-list"
               className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow"
             >
@@ -42,10 +43,10 @@ export default async function AdminPage() {
                 <h2 className="text-xl font-semibold text-gray-900">Waiting List</h2>
               </div>
               <p className="text-gray-600">View and manage waiting list entries</p>
-            </a>
+            </Link>
 
             {/* Blackout Dates Card */}
-            <a
+            <Link
               href="/admin/blackout-dates"
               className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow"
             >
@@ -58,10 +59,10 @@ export default async function AdminPage() {
                 <h2 className="text-xl font-semibold text-gray-900">Blackout Dates</h2>
               </div>
               <p className="text-gray-600">Manage unavailable dates</p>
-            </a>
+            </Link>
 
             {/* Bookings Card */}
-            <a
+            <Link
               href="/admin/appointments"
               className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow"
             >
@@ -74,7 +75,7 @@ export default async function AdminPage() {
                 <h2 className="text-xl font-semibold text-gray-900">Bookings</h2>
               </div>
               <p className="text-gray-600">View all scheduled bookings</p>
-            </a>
+            </Link>
           </div>
         </div>
       </div>

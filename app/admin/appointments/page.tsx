@@ -1,5 +1,6 @@
 'use client';
 
+import Link from "next/link";
 import { useState, useEffect } from 'react';
 import { formatDateUTC } from '@/lib/dates';
 
@@ -26,6 +27,25 @@ interface Metadata {
   types: string[];
 }
 
+type SortField = 'date' | 'park' | 'type' | 'id';
+type SortDirection = 'asc' | 'desc';
+
+function SortIcon({
+  field,
+  sortField,
+  sortDirection,
+}: {
+  field: SortField;
+  sortField: SortField;
+  sortDirection: SortDirection;
+}) {
+  if (sortField !== field) {
+    return <span className="text-gray-400">⇅</span>;
+  }
+
+  return sortDirection === 'asc' ? <span>↑</span> : <span>↓</span>;
+}
+
 export default function AdminAppointmentsPage() {
   const [data, setData] = useState<PaginatedData>({
     appointments: [],
@@ -45,8 +65,8 @@ export default function AdminAppointmentsPage() {
   const [searchFilter, setSearchFilter] = useState('');
   
   // Sort states
-  const [sortField, setSortField] = useState<'date' | 'park' | 'type' | 'id'>('date');
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+  const [sortField, setSortField] = useState<SortField>('date');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -62,8 +82,6 @@ export default function AdminAppointmentsPage() {
 
   // Fetch appointments when filters, sort, or pagination changes
   useEffect(() => {
-    setLoading(true);
-    
     const params = new URLSearchParams({
       page: currentPage.toString(),
       pageSize: pageSize.toString(),
@@ -89,7 +107,8 @@ export default function AdminAppointmentsPage() {
       });
   }, [currentPage, pageSize, parkFilter, typeFilter, dateFromFilter, dateToFilter, searchFilter, sortField, sortDirection]);
 
-  const handleSort = (field: 'date' | 'park' | 'type' | 'id') => {
+  const handleSort = (field: SortField) => {
+    setLoading(true);
     if (sortField === field) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
@@ -99,17 +118,13 @@ export default function AdminAppointmentsPage() {
   };
 
   const handleClearFilters = () => {
+    setLoading(true);
     setParkFilter('');
     setTypeFilter('');
     setDateFromFilter('');
     setDateToFilter('');
     setSearchFilter('');
     setCurrentPage(1);
-  };
-
-  const SortIcon = ({ field }: { field: string }) => {
-    if (sortField !== field) return <span className="text-gray-400">⇅</span>;
-    return sortDirection === 'asc' ? <span>↑</span> : <span>↓</span>;
   };
 
   return (
@@ -119,12 +134,12 @@ export default function AdminAppointmentsPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-bold text-gray-900">Admin Portal</h1>
-            <a
+            <Link
               href="/auth/logout"
               className="text-sm text-gray-600 hover:text-gray-900"
             >
               Logout
-            </a>
+            </Link>
           </div>
         </div>
       </nav>
@@ -133,9 +148,9 @@ export default function AdminAppointmentsPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb */}
         <div className="mb-6">
-          <a href="/admin" className="text-blue-600 hover:text-blue-800">
+          <Link href="/admin" className="text-blue-600 hover:text-blue-800">
             ← Back to Dashboard
-          </a>
+          </Link>
         </div>
 
         <h2 className="text-3xl font-bold text-gray-900 mb-6">Bookings</h2>
@@ -160,6 +175,7 @@ export default function AdminAppointmentsPage() {
                 type="text"
                 value={searchFilter}
                 onChange={(e) => {
+                  setLoading(true);
                   setSearchFilter(e.target.value);
                   setCurrentPage(1);
                 }}
@@ -176,6 +192,7 @@ export default function AdminAppointmentsPage() {
               <select
                 value={parkFilter}
                 onChange={(e) => {
+                  setLoading(true);
                   setParkFilter(e.target.value);
                   setCurrentPage(1);
                 }}
@@ -198,6 +215,7 @@ export default function AdminAppointmentsPage() {
               <select
                 value={typeFilter}
                 onChange={(e) => {
+                  setLoading(true);
                   setTypeFilter(e.target.value);
                   setCurrentPage(1);
                 }}
@@ -221,6 +239,7 @@ export default function AdminAppointmentsPage() {
                 type="date"
                 value={dateFromFilter}
                 onChange={(e) => {
+                  setLoading(true);
                   setDateFromFilter(e.target.value);
                   setCurrentPage(1);
                 }}
@@ -237,6 +256,7 @@ export default function AdminAppointmentsPage() {
                 type="date"
                 value={dateToFilter}
                 onChange={(e) => {
+                  setLoading(true);
                   setDateToFilter(e.target.value);
                   setCurrentPage(1);
                 }}
@@ -252,6 +272,7 @@ export default function AdminAppointmentsPage() {
               <select
                 value={pageSize}
                 onChange={(e) => {
+                  setLoading(true);
                   setPageSize(Number(e.target.value));
                   setCurrentPage(1);
                 }}
@@ -283,19 +304,19 @@ export default function AdminAppointmentsPage() {
                     onClick={() => handleSort('id')}
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                   >
-                    ID <SortIcon field="id" />
+                    ID <SortIcon field="id" sortField={sortField} sortDirection={sortDirection} />
                   </th>
                   <th 
                     onClick={() => handleSort('date')}
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                   >
-                    Date <SortIcon field="date" />
+                    Date <SortIcon field="date" sortField={sortField} sortDirection={sortDirection} />
                   </th>
                   <th 
                     onClick={() => handleSort('park')}
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                   >
-                    Park <SortIcon field="park" />
+                    Park <SortIcon field="park" sortField={sortField} sortDirection={sortDirection} />
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Attraction
@@ -304,7 +325,7 @@ export default function AdminAppointmentsPage() {
                     onClick={() => handleSort('type')}
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                   >
-                    Type <SortIcon field="type" />
+                    Type <SortIcon field="type" sortField={sortField} sortDirection={sortDirection} />
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Shopify Order
@@ -363,14 +384,20 @@ export default function AdminAppointmentsPage() {
             <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
               <div className="flex-1 flex justify-between sm:hidden">
                 <button
-                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                  onClick={() => {
+                    setLoading(true);
+                    setCurrentPage(Math.max(1, currentPage - 1));
+                  }}
                   disabled={currentPage === 1}
                   className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Previous
                 </button>
                 <button
-                  onClick={() => setCurrentPage(Math.min(data.totalPages, currentPage + 1))}
+                  onClick={() => {
+                    setLoading(true);
+                    setCurrentPage(Math.min(data.totalPages, currentPage + 1));
+                  }}
                   disabled={currentPage === data.totalPages}
                   className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
@@ -390,7 +417,10 @@ export default function AdminAppointmentsPage() {
                 <div>
                   <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
                     <button
-                      onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                      onClick={() => {
+                        setLoading(true);
+                        setCurrentPage(Math.max(1, currentPage - 1));
+                      }}
                       disabled={currentPage === 1}
                       className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
@@ -413,7 +443,10 @@ export default function AdminAppointmentsPage() {
                       return (
                         <button
                           key={pageNum}
-                          onClick={() => setCurrentPage(pageNum)}
+                          onClick={() => {
+                            setLoading(true);
+                            setCurrentPage(pageNum);
+                          }}
                           className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
                             currentPage === pageNum
                               ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
@@ -426,7 +459,10 @@ export default function AdminAppointmentsPage() {
                     })}
                     
                     <button
-                      onClick={() => setCurrentPage(Math.min(data.totalPages, currentPage + 1))}
+                      onClick={() => {
+                        setLoading(true);
+                        setCurrentPage(Math.min(data.totalPages, currentPage + 1));
+                      }}
                       disabled={currentPage === data.totalPages}
                       className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                     >

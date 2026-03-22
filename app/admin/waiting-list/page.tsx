@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { formatDateUTC } from '@/lib/dates';
 import Image from 'next/image';
+import Link from "next/link";
 
 interface WaitingListEntry {
   id: number;
@@ -62,10 +63,10 @@ export default function AdminWaitingListPage() {
       {/* Navigation Bar */}
       <nav className="w-full py-4 px-4 sm:px-6 lg:px-8 shadow-lg text-white" style={{ backgroundImage: 'url(/global-nav-bg.png)' }}>
         <div className="flex items-center justify-between">
-          <a href="/admin" className="flex items-center gap-2 font-bold text-lg text-black hover:text-gray-700 transition-colors">
+          <Link href="/admin" className="flex items-center gap-2 font-bold text-lg text-black hover:text-gray-700 transition-colors">
             <Image src="/key-logo.png" alt="Key Logo" width={48} height={48} className="h-12 w-auto" />
             My Magical VIP - Admin
-          </a>
+          </Link>
           <div className="flex items-center gap-4">
             <a
               href="/api/auth/logout"
@@ -82,12 +83,12 @@ export default function AdminWaitingListPage() {
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center justify-between mb-8">
             <h1 className="text-4xl font-bold text-blue-900">Waiting List Entries</h1>
-            <a
+            <Link
               href="/admin"
               className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors"
             >
               ← Back to Dashboard
-            </a>
+            </Link>
           </div>
 
           {loading ? (

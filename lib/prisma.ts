@@ -12,20 +12,35 @@ const connectionString =
   process.env.DATABASE_URL_UNPOOLED || 
   process.env.DATABASE_URL;
 
-if (!connectionString) {
-  throw new Error("Database connection string environment variable is not set");
-}
+function createPrismaClient(): PrismaClient {
+  if (!connectionString) {
+    throw new Error("Database connection string environment variable is not set");
+  }
 
-const pool = new pg.Pool({ connectionString });
-const adapter = new PrismaPg(pool);
+  const pool = new pg.Pool({ connectionString });
+  const adapter = new PrismaPg(pool);
 
-const prisma =
-  globalForPrisma.prisma ??
-  new PrismaClient({
+  return new PrismaClient({
     adapter,
     log: process.env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
   });
+}
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+function getPrismaClient(): PrismaClient {
+  if (!globalForPrisma.prisma) {
+    globalForPrisma.prisma = createPrismaClient();
+  }
+
+  return globalForPrisma.prisma;
+}
+
+const prisma = new Proxy({} as PrismaClient, {
+  get(_target, prop, receiver) {
+    const client = getPrismaClient();
+    const value = Reflect.get(client, prop, receiver);
+
+    return typeof value === "function" ? value.bind(client) : value;
+  },
+});
 
 export default prisma;

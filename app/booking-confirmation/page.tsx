@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense, useEffect, useState, type ReactNode } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { formatDateUTC } from '@/lib/dates';
@@ -196,9 +197,9 @@ function BookingConfirmationContent(): ReactNode {
         <div className="max-w-6xl mx-auto">
           <ol className="flex items-center space-x-2 text-sm">
             <li>
-              <a href="/" className="text-blue-600 hover:text-blue-700">
+              <Link href="/" className="text-blue-600 hover:text-blue-700">
                 Home
-              </a>
+              </Link>
             </li>
             <li className="text-gray-500">/</li>
             <li>
@@ -272,14 +273,14 @@ function BookingConfirmationContent(): ReactNode {
               />
               <label htmlFor="terms" className="text-gray-700 cursor-pointer">
                 I have read and agree to the{" "}
-                <a
+                <Link
                   href="/terms"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-600 hover:text-blue-700 underline font-semibold"
                 >
                   Terms and Conditions
-                </a>
+                </Link>
                 {" "}of My Magical VIP
               </label>
             </div>

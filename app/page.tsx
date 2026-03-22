@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import type { ReactNode } from "react";
 import { getProductsByCollection, getProducts } from "@/lib/shopify";
 import AddToCartButton from "@/components/AddToCartButton";
@@ -170,9 +171,9 @@ function HomePageClient({ packages }: { packages: PackageOption[] }) {
             Let us take the stress out of your Disney trip. We will manage your
             entire day, all you have to do is show up and relax!
           </p>
-          <a href="/typical-days" className="inline-block text-white font-bold py-3 px-8 rounded-full shadow-lg green-button" style={{ textShadow: '2px 2px 2px #333333' }}>
+          <Link href="/typical-days" className="inline-block text-white font-bold py-3 px-8 rounded-full shadow-lg green-button" style={{ textShadow: '2px 2px 2px #333333' }}>
             View Our Typical Days at Each Park
-          </a>
+          </Link>
         </div>
       </section>
 
@@ -227,7 +228,7 @@ function HomePageClient({ packages }: { packages: PackageOption[] }) {
                 className="bg-white border-l-4 border-emerald-500 rounded-lg p-6 shadow-md"
               >
                 <p className="text-gray-700 mb-4 italic">
-                  "{testimonial.quote}"
+                  &quot;{testimonial.quote}&quot;
                 </p>
                 <p className="font-bold text-blue-900">
                   -{testimonial.author}
