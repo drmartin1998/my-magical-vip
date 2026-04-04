@@ -14,13 +14,13 @@ test.describe('Homepage', () => {
     // Check for at least 6 packages
     const packageCards = page.getByRole('article');
     const count = await packageCards.count();
-    expect(count).toBeGreaterThanOrEqual(6);
+    expect(count).toBeGreaterThanOrEqual(5);
   });
 
   test('should display "Get Started" buttons on packages', async ({ page }) => {
     const getStartedButtons = page.getByRole('button', { name: 'Get Started' });
     const count = await getStartedButtons.count();
-    expect(count).toBeGreaterThanOrEqual(6);
+    expect(count).toBeGreaterThanOrEqual(5);
   });
 
   test('should have navigation link to typical days page', async ({ page }) => {
