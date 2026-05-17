@@ -33,14 +33,13 @@ export function getBookingWindowEndDate(baseDate: Date = new Date()): Date {
 }
 
 /**
- * Maximum number of VIP bookings allowed per calendar day.
- * A VIP experience is inherently limited — keeping capacity tight is
- * intentional and reinforces the premium nature of the service.
+ * A date becomes fully booked once it reaches the same threshold that turns it
+ * into a blackout date in the checkout flow.
  */
-export const MAX_DAILY_BOOKINGS = 10;
+export const FULLY_BOOKED_APPOINTMENTS = 3;
 
 /**
- * Fraction of MAX_DAILY_BOOKINGS at which a date is considered "near full"
- * and the FOMO indicator is displayed to users (80 %).
+ * A date is considered near full when there is only one remaining booking slot
+ * before it becomes fully booked.
  */
-export const NEAR_FULL_THRESHOLD = 0.8;
+export const NEAR_FULL_APPOINTMENTS = FULLY_BOOKED_APPOINTMENTS - 1;

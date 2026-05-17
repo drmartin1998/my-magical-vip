@@ -117,7 +117,7 @@ test.describe('Near-Full Booking Indicator', () => {
         json: {
           nearFullDates: [nearFullDate],
           capacityData: {
-            [nearFullDate]: { count: 9, capacity: 10, percentage: 0.9, nearFull: true },
+            [nearFullDate]: { count: 2, capacity: 3, percentage: 2 / 3, nearFull: true },
           },
         },
       })
@@ -150,7 +150,7 @@ test.describe('Near-Full Booking Indicator', () => {
         json: {
           nearFullDates: [nearFullDate],
           capacityData: {
-            [nearFullDate]: { count: 8, capacity: 10, percentage: 0.8, nearFull: true },
+            [nearFullDate]: { count: 2, capacity: 3, percentage: 2 / 3, nearFull: true },
           },
         },
       })
@@ -183,7 +183,7 @@ test.describe('Near-Full Booking Indicator', () => {
         json: {
           nearFullDates: [nearFullDate],
           capacityData: {
-            [nearFullDate]: { count: 9, capacity: 10, percentage: 0.9, nearFull: true },
+            [nearFullDate]: { count: 2, capacity: 3, percentage: 2 / 3, nearFull: true },
           },
         },
       })
@@ -231,7 +231,7 @@ test.describe('Near-Full Booking Indicator', () => {
         json: {
           nearFullDates: [farDate],
           capacityData: {
-            [farDate]: { count: 9, capacity: 10, percentage: 0.9, nearFull: true },
+            [farDate]: { count: 2, capacity: 3, percentage: 2 / 3, nearFull: true },
           },
         },
       })
@@ -276,7 +276,7 @@ test.describe('Near-Full Booking Indicator', () => {
         json: {
           nearFullDates: [farDate],
           capacityData: {
-            [farDate]: { count: 9, capacity: 10, percentage: 0.9, nearFull: true },
+            [farDate]: { count: 2, capacity: 3, percentage: 2 / 3, nearFull: true },
           },
         },
       })
@@ -323,5 +323,32 @@ test.describe('Near-Full Booking Indicator', () => {
     // No near-full banner shown on error
     await expect(page.getByTestId('near-full-banner')).not.toBeVisible();
   });
-});
 
+  test('does not show a near-full indicator for a fully booked blackout date', async ({ page }) => {
+    const fullDate = futureDateKey(15);
+
+    await page.route('/api/blackout-dates', (route) =>
+      route.fulfill({ json: { blackoutDates: [fullDate] } })
+    );
+
+    await page.route('/api/date-capacity', (route) =>
+      route.fulfill({
+        json: {
+          nearFullDates: [],
+          capacityData: {
+            [fullDate]: { count: 3, capacity: 3, percentage: 1, nearFull: false },
+          },
+        },
+      })
+    );
+
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Get Started' }).first().click();
+    await expect(page.getByText('Loading availability...')).not.toBeVisible();
+
+    await navigateToDateMonth(page, fullDate);
+
+    await expect(page.getByTestId('near-full-banner')).not.toBeVisible();
+    await expect(page.getByTestId(`near-full-date-${fullDate}`)).not.toBeVisible();
+  });
+});

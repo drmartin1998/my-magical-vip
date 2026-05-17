@@ -1,8 +1,8 @@
 import type { NextRequest } from "next/server";
 import { getAppointmentCountsByDateRange } from "@/lib/appointments";
 import {
-  MAX_DAILY_BOOKINGS,
-  NEAR_FULL_THRESHOLD,
+  FULLY_BOOKED_APPOINTMENTS,
+  NEAR_FULL_APPOINTMENTS,
   getBookingWindowEndDate,
 } from "@/lib/dates";
 
@@ -25,6 +25,8 @@ export interface DateCapacityResponse {
  *
  * Returns near-full dates within the booking window so the calendar can
  * display a FOMO indicator to users browsing available dates.
+ *
+ * A date is "near full" when it is one booking away from becoming blacked out.
  *
  * Query params (both optional):
  *   from  – start of the range (YYYY-MM-DD, defaults to today)
@@ -57,11 +59,12 @@ export async function GET(request: NextRequest): Promise<Response> {
     const nearFullDates: string[] = [];
 
     for (const [dateKey, count] of Object.entries(counts)) {
-      const percentage = count / MAX_DAILY_BOOKINGS;
-      const nearFull = percentage >= NEAR_FULL_THRESHOLD;
+      const percentage = count / FULLY_BOOKED_APPOINTMENTS;
+      const nearFull =
+        count >= NEAR_FULL_APPOINTMENTS && count < FULLY_BOOKED_APPOINTMENTS;
       capacityData[dateKey] = {
         count,
-        capacity: MAX_DAILY_BOOKINGS,
+        capacity: FULLY_BOOKED_APPOINTMENTS,
         percentage,
         nearFull,
       };
