@@ -2,6 +2,10 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
+import {
+  BOOKING_WINDOW_MONTHS,
+  getBookingWindowEndDate,
+} from "@/lib/dates";
 
 interface CalendarDatePickerProps {
   numberOfDays: number;
@@ -19,6 +23,9 @@ export default function CalendarDatePicker({
   const [selectedDates, setSelectedDates] = useState<Set<string>>(new Set());
   const [blackoutDates, setBlackoutDates] = useState<Set<string>>(new Set());
   const [isLoadingBlackouts, setIsLoadingBlackouts] = useState(true);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const bookingWindowEndDate = getBookingWindowEndDate(today);
 
   useEffect((): void => {
     const fetchBlackoutDates = async (): Promise<void> => {
@@ -107,18 +114,13 @@ export default function CalendarDatePicker({
       day
     );
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
     // Check if date is in past
     if (date.getTime() < today.getTime()) {
       return false;
     }
 
-    // Check if date is more than 180 days out
-    const maxDate = new Date(today);
-    maxDate.setDate(maxDate.getDate() + 180);
-    if (date.getTime() > maxDate.getTime()) {
+    // Check if date is beyond the booking window
+    if (date.getTime() > bookingWindowEndDate.getTime()) {
       return false;
     }
 
@@ -128,18 +130,11 @@ export default function CalendarDatePicker({
   };
 
   const canGoToNextMonth = (): boolean => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const maxDate = new Date(today);
-    maxDate.setDate(maxDate.getDate() + 180);
-    
     const nextMonthDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1);
-    return nextMonthDate.getTime() <= maxDate.getTime();
+    return nextMonthDate.getTime() <= bookingWindowEndDate.getTime();
   };
 
   const canGoToPreviousMonth = (): boolean => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
     const firstDayOfCurrentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
     return firstDayOfCurrentMonth.getTime() > today.getTime();
   };
@@ -169,6 +164,9 @@ export default function CalendarDatePicker({
       </h2>
       <p className="text-gray-600 text-sm mb-4">
         Click to select {numberOfDays} day{numberOfDays > 1 ? "s" : ""} ({selectedDates.size}/{numberOfDays} selected)
+      </p>
+      <p className="text-gray-500 text-xs mb-4">
+        Dates are available up to {BOOKING_WINDOW_MONTHS} months in advance.
       </p>
 
       {selectedDates.size > 0 && (

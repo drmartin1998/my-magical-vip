@@ -8,6 +8,8 @@
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
+    "project:status": "node scripts/set-project-status.mjs",
+    "project:ready": "node scripts/set-project-status.mjs --status Ready",
     "test": "playwright test",
     "test:ui": "playwright test --ui",
     "test:headed": "playwright test --headed",

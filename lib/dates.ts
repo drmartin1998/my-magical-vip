@@ -22,3 +22,12 @@ export function formatDateUTC(
     ...options,
   });
 }
+
+export const BOOKING_WINDOW_MONTHS = 12;
+
+export function getBookingWindowEndDate(baseDate: Date = new Date()): Date {
+  const endDate = new Date(baseDate);
+  endDate.setHours(0, 0, 0, 0);
+  endDate.setFullYear(endDate.getFullYear() + 1);
+  return endDate;
+}

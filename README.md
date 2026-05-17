@@ -34,3 +34,23 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## GitHub Project automation
+
+This repo includes a small script for moving issue cards on the linked GitHub Project board.
+
+The workspace MCP config also includes the hosted GitHub **projects** toolset at `https://api.githubcopilot.com/mcp/x/projects`, so MCP-capable editors can query and update GitHub Projects directly alongside the local project-status script.
+
+1. Add a `COPILOT_PROJECTS_TOKEN` secret to the repository's `copilot` environment. The token must be able to edit the target GitHub Project and read the issue's repository.
+2. The script defaults to the `drmartin1998` user project `#2` and its `Status` field. Override with `GITHUB_PROJECT_OWNER`, `GITHUB_PROJECT_NUMBER`, or `GITHUB_PROJECT_STATUS_FIELD` if needed.
+3. Move an issue to **Ready** with:
+
+```bash
+npm run project:ready -- --issue 1
+```
+
+To set a different status:
+
+```bash
+npm run project:status -- --issue 1 --status "In Progress"
+```

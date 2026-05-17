@@ -1,4 +1,5 @@
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect } from '@playwright/test';
+import { getBookingWindowEndDate } from '@/lib/dates';
 
 test.describe('Calendar Date Picker', () => {
   test.beforeEach(async ({ page }) => {
@@ -34,8 +35,32 @@ test.describe('Calendar Date Picker', () => {
     await page.getByRole('button', { name: 'Next month' }).click();
     
     const monthYearAfter = await monthHeading.textContent();
-    
+
     expect(monthYearBefore).not.toBe(monthYearAfter);
+  });
+
+  test('should allow navigation through the 12 month booking window only', async ({ page }) => {
+    await page.getByRole('button', { name: 'Get Started' }).first().click();
+
+    const monthHeading = page.getByTestId('calendar-month');
+    const nextButton = page.getByRole('button', { name: 'Next month' });
+    const bookingWindowEndDate = getBookingWindowEndDate();
+    const lastAvailableMonth = bookingWindowEndDate.toLocaleString('default', {
+      month: 'long',
+      year: 'numeric',
+    });
+
+    for (let i = 0; i < 13; i += 1) {
+      if ((await monthHeading.textContent()) === lastAvailableMonth) {
+        break;
+      }
+
+      await expect(nextButton).toBeEnabled();
+      await nextButton.click();
+    }
+
+    await expect(monthHeading).toHaveText(lastAvailableMonth);
+    await expect(nextButton).toBeDisabled();
   });
 
   test('should close modal when clicking close button', async ({ page }) => {
