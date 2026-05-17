@@ -31,3 +31,16 @@ export function getBookingWindowEndDate(baseDate: Date = new Date()): Date {
   endDate.setFullYear(endDate.getFullYear() + 1);
   return endDate;
 }
+
+/**
+ * Maximum number of VIP bookings allowed per calendar day.
+ * A VIP experience is inherently limited — keeping capacity tight is
+ * intentional and reinforces the premium nature of the service.
+ */
+export const MAX_DAILY_BOOKINGS = 10;
+
+/**
+ * Fraction of MAX_DAILY_BOOKINGS at which a date is considered "near full"
+ * and the FOMO indicator is displayed to users (80 %).
+ */
+export const NEAR_FULL_THRESHOLD = 0.8;

@@ -165,6 +165,37 @@ export async function getAppointmentsPaginated(
   }
 }
 
+/**
+ * Returns a map of YYYY-MM-DD → booking count for every date that has at
+ * least one appointment within the given date range (inclusive).
+ */
+export async function getAppointmentCountsByDateRange(
+  from: Date,
+  to: Date
+): Promise<Record<string, number>> {
+  try {
+    const appointments = await prisma.appointment.findMany({
+      where: {
+        date: {
+          gte: from,
+          lte: to,
+        },
+      },
+      select: { date: true },
+    });
+
+    const counts: Record<string, number> = {};
+    for (const { date } of appointments) {
+      const key = date.toISOString().split("T")[0];
+      counts[key] = (counts[key] ?? 0) + 1;
+    }
+    return counts;
+  } catch (error) {
+    console.error("Error fetching appointment counts by date range:", error);
+    return {};
+  }
+}
+
 export async function getUniqueParksList(): Promise<string[]> {
   try {
     const parks = await prisma.appointment.findMany({

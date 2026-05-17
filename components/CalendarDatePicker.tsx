@@ -6,6 +6,7 @@ import {
   BOOKING_WINDOW_MONTHS,
   getBookingWindowEndDate,
 } from "@/lib/dates";
+import type { DateCapacityResponse } from "@/app/api/date-capacity/route";
 
 interface CalendarDatePickerProps {
   numberOfDays: number;
@@ -22,6 +23,7 @@ export default function CalendarDatePicker({
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDates, setSelectedDates] = useState<Set<string>>(new Set());
   const [blackoutDates, setBlackoutDates] = useState<Set<string>>(new Set());
+  const [nearFullDates, setNearFullDates] = useState<Set<string>>(new Set());
   const [isLoadingBlackouts, setIsLoadingBlackouts] = useState(true);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -43,7 +45,20 @@ export default function CalendarDatePicker({
       }
     };
 
+    const fetchNearFullDates = async (): Promise<void> => {
+      try {
+        const response = await fetch("/api/date-capacity");
+        if (response.ok) {
+          const data = (await response.json()) as DateCapacityResponse;
+          setNearFullDates(new Set(data.nearFullDates));
+        }
+      } catch (error) {
+        console.error("Error fetching date capacity:", error);
+      }
+    };
+
     fetchBlackoutDates();
+    fetchNearFullDates();
   }, []);
 
   const getDaysInMonth = (date: Date): number => {
@@ -129,6 +144,15 @@ export default function CalendarDatePicker({
     return !blackoutDates.has(dateKey);
   };
 
+  const isNearFullDate = (day: number): boolean => {
+    const date = new Date(
+      currentMonth.getFullYear(),
+      currentMonth.getMonth(),
+      day
+    );
+    return nearFullDates.has(getDateKey(date));
+  };
+
   const canGoToNextMonth = (): boolean => {
     const nextMonthDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1);
     return nextMonthDate.getTime() <= bookingWindowEndDate.getTime();
@@ -157,6 +181,12 @@ export default function CalendarDatePicker({
 
   const sortedSelectedDates = Array.from(selectedDates).sort();
 
+  // Check if the current month view contains any near-full dates that are
+  // still clickable — used to decide whether to show the legend/banner.
+  const visibleNearFullDates = days.filter(
+    (day): day is number => day !== null && isClickableDate(day) && isNearFullDate(day)
+  );
+
   return (
     <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full">
       <h2 className="text-2xl font-bold text-blue-900 mb-2">
@@ -168,6 +198,21 @@ export default function CalendarDatePicker({
       <p className="text-gray-500 text-xs mb-4">
         Dates are available up to {BOOKING_WINDOW_MONTHS} months in advance.
       </p>
+
+      {/* Near-full banner — shown when this month view has near-capacity dates */}
+      {visibleNearFullDates.length > 0 && (
+        <div
+          className="mb-4 bg-orange-50 border border-orange-300 rounded-lg p-3 flex items-start gap-2"
+          data-testid="near-full-banner"
+          role="alert"
+          aria-live="polite"
+        >
+          <span className="text-orange-500 text-lg leading-none" aria-hidden="true">🔥</span>
+          <p className="text-sm font-semibold text-orange-800">
+            Hurry! Some dates this month are almost fully booked. Secure your spot before it&apos;s too late!
+          </p>
+        </div>
+      )}
 
       {selectedDates.size > 0 && (
         <div className="bg-blue-50 border border-blue-200 rounded p-3 mb-4">
@@ -230,45 +275,76 @@ export default function CalendarDatePicker({
               </div>
             </div>
           ) : (
-            days.map((day, idx) => (
-              <div key={idx}>
-                {day === null ? (
-                  <div className="h-8 w-8"></div>
-                ) : (
+            days.map((day, idx) => {
+              if (day === null) {
+                return <div key={idx} className="h-8 w-8" />;
+              }
+
+              const clickable = isClickableDate(day);
+              const selected = isDateSelected(day);
+              const nearFull = clickable && isNearFullDate(day);
+              const dateKey = getDateKey(
+                new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day)
+              );
+
+              return (
+                <div key={idx} className="relative">
                   <button
                     onClick={(): void => {
-                      if (isClickableDate(day)) {
-                        handleDateClick(day);
-                      }
+                      if (clickable) handleDateClick(day);
                     }}
-                    disabled={!isClickableDate(day) || (selectedDates.size >= numberOfDays && !isDateSelected(day))}
+                    disabled={!clickable || (selectedDates.size >= numberOfDays && !selected)}
+                    data-testid={nearFull ? `near-full-date-${dateKey}` : undefined}
+                    aria-label={
+                      nearFull
+                        ? `${day} – almost fully booked`
+                        : String(day)
+                    }
                     className={`h-8 w-8 rounded text-sm font-medium transition-colors ${
-                      !isClickableDate(day)
+                      !clickable
                         ? "text-gray-300 cursor-not-allowed bg-red-100"
-                        : isDateSelected(day)
+                        : selected
                         ? "bg-emerald-600 text-white"
                         : selectedDates.size >= numberOfDays
                         ? "text-gray-300 cursor-not-allowed"
+                        : nearFull
+                        ? "bg-orange-100 text-orange-900 ring-2 ring-orange-400 hover:bg-orange-200"
                         : "hover:bg-gray-100 text-gray-800"
                     }`}
                     title={
-                      !isClickableDate(day) && blackoutDates.has(getDateKey(new Date(
-                        currentMonth.getFullYear(),
-                        currentMonth.getMonth(),
-                        day
-                      )))
+                      nearFull
+                        ? "Almost fully booked – hurry!"
+                        : !clickable && blackoutDates.has(dateKey)
                         ? "Blackout date"
                         : undefined
                     }
                   >
                     {day}
                   </button>
-                )}
-              </div>
-            ))
+                  {/* Near-full flame badge */}
+                  {nearFull && !selected && (
+                    <span
+                      className="absolute -top-1 -right-1 text-[9px] leading-none pointer-events-none"
+                      aria-hidden="true"
+                      data-testid={`near-full-badge-${dateKey}`}
+                    >
+                      🔥
+                    </span>
+                  )}
+                </div>
+              );
+            })
           )}
         </div>
       </div>
+
+      {/* Legend */}
+      {nearFullDates.size > 0 && (
+        <div className="mb-3 flex items-center gap-2 text-xs text-orange-700" data-testid="near-full-legend">
+          <span className="inline-block h-3 w-3 rounded ring-2 ring-orange-400 bg-orange-100 flex-shrink-0" aria-hidden="true" />
+          Almost fully booked
+        </div>
+      )}
 
       {blackoutDates.size > 0 && (
         <div className="mb-4 bg-amber-50 border border-amber-200 rounded p-3">
@@ -303,3 +379,4 @@ export default function CalendarDatePicker({
     </div>
   );
 }
+
