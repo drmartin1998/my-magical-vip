@@ -31,15 +31,3 @@ export function getBookingWindowEndDate(baseDate: Date = new Date()): Date {
   endDate.setFullYear(endDate.getFullYear() + 1);
   return endDate;
 }
-
-/**
- * A date becomes fully booked once it reaches the same threshold that turns it
- * into a blackout date in the checkout flow.
- */
-export const FULLY_BOOKED_APPOINTMENTS = 3;
-
-/**
- * A date is considered near full when there is only one remaining booking slot
- * before it becomes fully booked.
- */
-export const NEAR_FULL_APPOINTMENTS = FULLY_BOOKED_APPOINTMENTS - 1;
