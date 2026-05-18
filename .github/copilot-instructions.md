@@ -11,6 +11,7 @@ This is a **Next.js 16 (App Router) project** with React 19, TypeScript, Tailwin
 - **Styling**: Tailwind CSS v4 with PostCSS
 - **Type Checking**: Strict TypeScript (`strict: true` in `tsconfig.json`)
 - **Linting**: ESLint with Next.js and Core Web Vitals configs
+- **Hosting**: Vercel (optimized for Next.js)
 
 ### Key Files & Their Roles
 - **`app/layout.tsx`** - Root layout with metadata, font imports (Geist family), and Tailwind font variables
@@ -23,8 +24,8 @@ This is a **Next.js 16 (App Router) project** with React 19, TypeScript, Tailwin
 
 ### Starting Development
 ```bash
-npm run dev      # Starts Next.js dev server on localhost:3000 with hot reload
-npm run build    # Production build (check for TS/lint errors)
+vercel dev       # Starts Next.js dev server on localhost:3000 with hot reload
+vercel build    # Production build (check for TS/lint errors)
 npm start        # Runs production server
 npm run lint     # Runs ESLint
 ```
