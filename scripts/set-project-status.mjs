@@ -65,29 +65,15 @@ async function githubGraphql(token, query, variables) {
   return payload.data;
 }
 
-async function getProject(token, projectOwner, projectNumber) {
+async function getProjectForOwnerType(
+  token,
+  ownerType,
+  projectOwner,
+  projectNumber
+) {
   const query = `
     query GetProject($projectOwner: String!, $projectNumber: Int!) {
-      userOwner: user(login: $projectOwner) {
-        projectV2(number: $projectNumber) {
-          id
-          title
-          fields(first: 50) {
-            nodes {
-              __typename
-              ... on ProjectV2SingleSelectField {
-                id
-                name
-                options {
-                  id
-                  name
-                }
-              }
-            }
-          }
-        }
-      }
-      organizationOwner: organization(login: $projectOwner) {
+      owner: ${ownerType}(login: $projectOwner) {
         projectV2(number: $projectNumber) {
           id
           title
@@ -109,12 +95,43 @@ async function getProject(token, projectOwner, projectNumber) {
     }
   `;
 
-  const data = await githubGraphql(token, query, {
-    projectOwner,
-    projectNumber,
-  });
+  try {
+    const data = await githubGraphql(token, query, {
+      projectOwner,
+      projectNumber,
+    });
 
-  return data.userOwner?.projectV2 ?? data.organizationOwner?.projectV2 ?? null;
+    return data.owner?.projectV2 ?? null;
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      error.message.includes(`Could not resolve to a`)
+    ) {
+      return null;
+    }
+
+    throw error;
+  }
+}
+
+async function getProject(token, projectOwner, projectNumber) {
+  const userProject = await getProjectForOwnerType(
+    token,
+    "user",
+    projectOwner,
+    projectNumber
+  );
+
+  if (userProject) {
+    return userProject;
+  }
+
+  return getProjectForOwnerType(
+    token,
+    "organization",
+    projectOwner,
+    projectNumber
+  );
 }
 
 async function getIssue(token, owner, repo, issueNumber) {
