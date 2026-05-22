@@ -140,7 +140,7 @@ test.describe('FAQ Page', () => {
   });
 
   test('should display copyright notice', async ({ page }) => {
-    const copyright = page.locator('text=Copyright ©2025 My Magical VIP');
+    const copyright = page.locator(`text=Copyright ©${new Date().getFullYear()} My Magical VIP`);
     await expect(copyright).toBeVisible();
   });
 
