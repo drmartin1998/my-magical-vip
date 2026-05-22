@@ -161,7 +161,7 @@ test.describe('Booking Confirmation Page', () => {
   });
 
   test('should display footer with company information', async ({ page }) => {
-    await expect(page.getByText('Copyright ©2025 My Magical VIP')).toBeVisible();
+    await expect(page.getByText(`Copyright ©${new Date().getFullYear()} My Magical VIP`)).toBeVisible();
     await expect(page.getByText(/My Magical VIP is a private company/i)).toBeVisible();
   });
 

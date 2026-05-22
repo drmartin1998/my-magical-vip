@@ -28,6 +28,6 @@ test.describe('Terms and Conditions Page', () => {
 
   test('should have proper layout matching other pages', async ({ page }) => {
     await expect(page.getByRole('link', { name: /My Magical VIP/ }).first()).toBeVisible();
-    await expect(page.getByText('Copyright ©2025 My Magical VIP')).toBeVisible();
+    await expect(page.getByText(`Copyright ©${new Date().getFullYear()} My Magical VIP`)).toBeVisible();
   });
 });

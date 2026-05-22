@@ -34,7 +34,7 @@ test.describe('Homepage', () => {
   });
 
   test('should display footer with copyright', async ({ page }) => {
-    await expect(page.getByText('Copyright ©2025 My Magical VIP')).toBeVisible();
+    await expect(page.getByText(`Copyright ©${new Date().getFullYear()} My Magical VIP`)).toBeVisible();
   });
 
   test('should have all three main sections', async ({ page }) => {

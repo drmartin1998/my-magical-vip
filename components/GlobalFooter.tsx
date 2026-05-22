@@ -1,6 +1,8 @@
 import Link from "next/link";
 
 export default function GlobalFooter() {
+  const currentYear = new Date().getFullYear();
+
   return (
     <footer className="bg-gradient-to-r from-blue-900 via-emerald-900 to-blue-900 text-white py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
@@ -90,7 +92,7 @@ export default function GlobalFooter() {
         </div>
 
         <div className="border-t border-emerald-700 pt-8 text-center text-sm text-gray-300">
-          <p className="mb-2">Copyright ©2025 My Magical VIP</p>
+          <p className="mb-2">Copyright ©{currentYear} My Magical VIP</p>
           <p className="text-xs">
             My Magical VIP is a private company in no way owned by or
             affiliated with the Walt Disney Company, Universal, Comcast or any

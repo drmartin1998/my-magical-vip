@@ -128,7 +128,7 @@ test.describe('Typical Days', () => {
     await page.locator('footer').scrollIntoViewIfNeeded();
     
     // Check footer content
-    await expect(page.locator('footer')).toContainText('Copyright ©2025 My Magical VIP');
+    await expect(page.locator('footer')).toContainText(`Copyright ©${new Date().getFullYear()} My Magical VIP`);
     await expect(page.locator('footer')).toContainText('My Magical VIP is a private company');
   });
 
