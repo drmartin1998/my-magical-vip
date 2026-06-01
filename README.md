@@ -54,3 +54,23 @@ To set a different status:
 ```bash
 npm run project:status -- --issue 1 --status "In Progress"
 ```
+
+## Spec Kit
+
+This repository now includes **GitHub Spec Kit** scaffolding for structured spec-driven work.
+
+- Core files live under **`.specify/`**
+- Copilot prompt files live under **`.github/prompts/`**
+- Spec Kit agents live under **`.github/agents/`** with the `speckit.*` prefix
+
+Common commands in Copilot-supported environments:
+
+```text
+/speckit.constitution
+/speckit.specify
+/speckit.plan
+/speckit.tasks
+/speckit.implement
+```
+
+Use Spec Kit for planning and task breakdown in `specs/`, and keep the repository Gherkin files in `features/` as the canonical acceptance criteria for shipped behavior.
